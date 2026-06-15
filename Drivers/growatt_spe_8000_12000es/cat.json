@@ -1,0 +1,16 @@
+{
+  "slug": "growatt_spe_8000_12000es",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Growatt",
+  "model": "SPE 8000-12000ES (off-grid storage hybrid)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Growatt SPE 8000-12000ES off-grid storage hybrid — Modbus RTU map for solar/battery/load power, energies and fault flags.",
+  "tags": ["inverter", "hybrid", "off-grid", "modbus"],
+  "dependencies": []
+}

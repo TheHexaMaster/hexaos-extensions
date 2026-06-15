@@ -1,0 +1,16 @@
+{
+  "slug": "asair_aht20",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "sensor",
+  "manufacturer": "ASAIR",
+  "model": "AHT20",
+  "version": "2.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Calibrated digital humidity + temperature sensor (Aosong AHT20). Pure command-protocol chip with no register-style addressing: trigger command, ~80 ms conversion, bare 7-byte read with CRC8. Address 0x38 fixed.",
+  "tags": ["humidity", "temperature", "sensor"],
+  "dependencies": []
+}

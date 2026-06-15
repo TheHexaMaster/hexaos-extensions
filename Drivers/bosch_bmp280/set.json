@@ -1,0 +1,12 @@
+{
+  "address": { "default": "0x77" },
+  "poll_ms": { "default": 1000 },
+  "settings": [
+    {
+      "key": "show_calibration",
+      "label": "Expose calibration coefficients",
+      "type": "bool",
+      "default": false
+    }
+  ]
+}

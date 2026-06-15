@@ -1,0 +1,16 @@
+{
+  "slug": "growatt_sph",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Growatt",
+  "model": "SPH 3000-10000 TL-BL/TL-BH (hybrid)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Growatt SPH 3000-10000 TL-BL/TL-BH hybrid — Modbus RTU map covering PV strings, battery, grid import/export and energies.",
+  "tags": ["inverter", "hybrid", "modbus"],
+  "dependencies": []
+}

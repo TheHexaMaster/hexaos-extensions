@@ -1,0 +1,16 @@
+{
+  "slug": "goodix_gt911",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "touch",
+  "manufacturer": "Goodix",
+  "model": "GT911",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Goodix GT911 capacitive touch controller for 1024x600-class TFT panels. Supports up to 5 simultaneous touch points; this template publishes the first point only (x, y, pressed).",
+  "tags": ["Touch", "Capacitive", "TFT"],
+  "dependencies": []
+}

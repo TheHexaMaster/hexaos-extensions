@@ -1,0 +1,18 @@
+{
+  "address": { "default": "0x75" },
+  "poll_ms": { "default": 3000 },
+  "settings": [
+    { "key": "charger_en",     "label": "Charger",                       "type": "bool", "default": true },
+    { "key": "boost_en",       "label": "Boost output",                  "type": "bool", "default": true },
+    { "key": "auto_pwr_on",    "label": "Auto power on (load detect)",   "type": "bool", "default": true },
+    { "key": "boost_out_en",   "label": "5V output enable",              "type": "bool", "default": true },
+    { "key": "btn_off_en",     "label": "Button shutdown",               "type": "bool", "default": true },
+    { "key": "low_pwr_off",    "label": "Low power shutdown",            "type": "bool", "default": true },
+    { "key": "boost_keep",     "label": "Keep 5V after VIN removed",     "type": "bool", "default": true },
+    { "key": "batt_voltage",   "label": "Battery voltage",               "type": "enum", "default": 0, "options": ["4.2V", "4.3V", "4.35V", "4.4V"] },
+    { "key": "charge_current", "label": "Charge current",                "type": "enum", "default": 4, "options": ["50 mA", "150 mA", "250 mA", "350 mA", "450 mA", "550 mA", "650 mA", "750 mA", "850 mA", "950 mA", "1050 mA", "1150 mA", "1250 mA", "1350 mA", "1450 mA", "1550 mA", "1650 mA", "1750 mA", "1850 mA", "1950 mA", "2050 mA"] },
+    { "key": "end_current",    "label": "End-of-charge current",         "type": "enum", "default": 1, "options": ["200 mA", "400 mA", "500 mA", "600 mA"] },
+    { "key": "cutoff_voltage", "label": "Charge cutoff voltage",         "type": "enum", "default": 3, "options": ["4.14/4.26/4.305/4.35V", "4.17/4.275/4.32/4.365V", "4.185/4.29/4.335/4.38V", "4.2/4.305/4.35/4.395V"] },
+    { "key": "shutdown_time",  "label": "Light-load shutdown",           "type": "enum", "default": 1, "options": ["8 s", "32 s", "16 s", "64 s"] }
+  ]
+}

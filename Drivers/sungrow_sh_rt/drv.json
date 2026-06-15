@@ -1,0 +1,77 @@
+{
+  "read_mode": "block",
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+
+  "blocks": [
+    [4, 4988, 50],
+    [4, 5048, 30],
+    [4, 13000, 40]
+  ],
+  "regs": [
+    { "addr": 4989, "func": 4, "type": "u16", "name": "Inverter Status",
+      "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Run", "32768": "Stop", "1": "Standby", "2": "Initial Standby",
+        "3": "Startup", "4": "Alarm", "5": "Derating Run", "6": "Dispatch Run",
+        "7": "Fault" } },
+    { "addr": 5000, "func": 4, "type": "u16", "name": "Inverter Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+    { "addr": 5001, "func": 4, "type": "u32", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 5003, "func": 4, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 5010, "func": 4, "type": "u16", "name": "PV1 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 5011, "func": 4, "type": "u16", "name": "PV1 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 5012, "func": 4, "type": "u16", "name": "PV2 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 5013, "func": 4, "type": "u16", "name": "PV2 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 5017, "func": 4, "type": "u32", "name": "PV Total Power",
+      "qty": "power", "unit": "W", "group": "mppt", "summary": true },
+
+    { "addr": 5019, "func": 4, "type": "u16", "name": "Grid Voltage L1",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 5036, "func": 4, "type": "u16", "name": "Grid Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+
+    { "addr": 13003, "func": 4, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "battery" },
+    { "addr": 13004, "func": 4, "type": "u16", "name": "Battery Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 13005, "func": 4, "type": "u16", "name": "Battery Power",
+      "qty": "power", "unit": "W", "group": "battery", "summary": true },
+    { "addr": 13022, "func": 4, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 13023, "func": 4, "type": "u16", "name": "Battery SOH",
+      "qty": "percentage", "unit": "%", "scale": 0.1, "group": "battery" },
+    { "addr": 13024, "func": 4, "type": "s16", "name": "Battery Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "battery" },
+
+    { "addr": 13007, "func": 4, "type": "u16", "name": "Running State",
+      "qty": "none", "vclass": "state", "group": "battery",
+      "enum": {
+        "0": "Standby", "1": "Discharging", "2": "Charging",
+        "4": "Charging from Grid" } },
+
+    { "addr": 13009, "func": 4, "type": "u32", "name": "Battery Discharge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+    { "addr": 13011, "func": 4, "type": "u32", "name": "Battery Charge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+
+    { "addr": 13033, "func": 4, "type": "s32", "name": "Active Power Total",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+    { "addr": 13035, "func": 4, "type": "s32", "name": "Grid Active Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+    { "addr": 13037, "func": 4, "type": "u32", "name": "Load Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true }
+  ]
+}

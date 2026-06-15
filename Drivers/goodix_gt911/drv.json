@@ -1,0 +1,64 @@
+{
+  "init_sequence": [
+    {
+      "register": "status",
+      "write":    0,
+      "comment":  "Defensive boot ack — without a HW reset pulse on the GT911 RESET pin (the carrier board ties touch reset to the panel reset rail, already cycled by display init), the chip can come up with a stale touch-data buffer and bit 7 of 0x814E already set. Writing 0 once at template-load time clears that initial state so the very first poll cycle observes a clean status. Subsequent acks fire from the per-field post_read on the 'y' field."
+    }
+  ],
+
+  "registers": [
+    {
+      "name": "status",
+      "addr": 33102,
+      "addr_bytes": 2,
+      "len": 1,
+      "format": "uint8",
+      "comment": "0x814E — buffer status. bit7 = data ready (1), bits 0..3 = touch count (0..5)."
+    },
+    {
+      "name": "touch1",
+      "addr": 33103,
+      "addr_bytes": 2,
+      "len": 8,
+      "format": "block",
+      "comment": "0x814F — first touch point: [track_id, x_lo, x_hi, y_lo, y_hi, size_lo, size_hi, reserved]. Engine reads the whole 8B block once; fields slice into it. Little-endian for x / y / size."
+    }
+  ],
+
+  "fields": [
+    {
+      "label":    "pressed",
+      "register": "status",
+      "mask":     15,
+      "shift":    0,
+      "type":     "bool",
+      "comment":  "GT911 status (0x814E) layout: bit7 = scan-iteration complete, bits 0..3 = touch_cnt (0..5). On this chip variant bit7 stays at 1 continuously (firmware reports 'scan done' on every iteration even when no touch is active) — using bit7 alone gives permanent pressed=true. The reliable presence indicator is touch_cnt: 0 means no active touch, 1..5 means N touch points. We mask the low nibble and let the engine's bool conversion (value != 0) turn it into pressed. The buffer at 0x814F retains the last sample's coords sticky between touches; LVGL only consumes them when state=PRESSED, so stale-coord exposure is harmless."
+    },
+    {
+      "label":      "x",
+      "register":   "touch1",
+      "byte_start": 1,
+      "byte_len":   2,
+      "byte_order": "le",
+      "type":       "int",
+      "comment":    "0x8150..0x8151 — touch X coordinate (panel units, 0..x_max). Sticky between touches: only valid when 'pressed' == true. Re-mapping (mirror / swap) is intentionally NOT done here so the raw chip output stays inspectable; the display_handler applies the per-board transform from custom.swap_xy / x_max."
+    },
+    {
+      "label":      "y",
+      "register":   "touch1",
+      "byte_start": 3,
+      "byte_len":   2,
+      "byte_order": "le",
+      "type":       "int",
+      "comment":    "0x8152..0x8153 — touch Y coordinate. Same sticky-buffer caveat as 'x'.",
+      "post_read":  [
+        {
+          "register": "status",
+          "write":    0,
+          "comment":  "GT911 ack — write 0 to 0x814E to clear the buffer-ready latch. MUST happen after the whole touch1 block has been read so we don't lose the current sample; firing on the last field's post_read keeps the sequence in the right order without extra synthetic fields."
+        }
+      ]
+    }
+  ]
+}

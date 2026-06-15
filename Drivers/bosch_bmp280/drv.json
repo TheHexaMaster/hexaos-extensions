@@ -1,0 +1,128 @@
+{
+  "device_id": { "reg": 208, "len": 1, "expected": 88, "enforce": true },
+
+  "registers": [
+    { "name": "chip_id",    "addr": 208, "len": 1, "format": "uint8",     "cached": true, "comment": "0xD0: should read 0x58 for BMP280 (0x60 = BME280, 0x55 = BMP180)" },
+    { "name": "reset",      "addr": 224, "len": 1, "format": "uint8",     "comment": "0xE0: write 0xB6 for soft reset" },
+
+    { "name": "dig_T1_reg", "addr": 136, "len": 2, "format": "uint16_le", "cached": true, "comment": "0x88: dig_T1 (unsigned)" },
+    { "name": "dig_T2_reg", "addr": 138, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x8A: dig_T2 (signed)" },
+    { "name": "dig_T3_reg", "addr": 140, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x8C: dig_T3 (signed)" },
+    { "name": "dig_P1_reg", "addr": 142, "len": 2, "format": "uint16_le", "cached": true, "comment": "0x8E: dig_P1 (unsigned)" },
+    { "name": "dig_P2_reg", "addr": 144, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x90: dig_P2 (signed)" },
+    { "name": "dig_P3_reg", "addr": 146, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x92: dig_P3 (signed)" },
+    { "name": "dig_P4_reg", "addr": 148, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x94: dig_P4 (signed)" },
+    { "name": "dig_P5_reg", "addr": 150, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x96: dig_P5 (signed)" },
+    { "name": "dig_P6_reg", "addr": 152, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x98: dig_P6 (signed)" },
+    { "name": "dig_P7_reg", "addr": 154, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x9A: dig_P7 (signed)" },
+    { "name": "dig_P8_reg", "addr": 156, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x9C: dig_P8 (signed)" },
+    { "name": "dig_P9_reg", "addr": 158, "len": 2, "format": "int16_le",  "cached": true, "comment": "0x9E: dig_P9 (signed)" },
+
+    { "name": "config",     "addr": 245, "len": 1, "format": "uint8",     "comment": "0xF5: standby (7:5) | IIR filter (4:2) | spi3w_en (0)" },
+    { "name": "ctrl_meas",  "addr": 244, "len": 1, "format": "uint8",     "comment": "0xF4: osrs_t (7:5) | osrs_p (4:2) | mode (1:0). 0x25 = osr_t x1 + osr_p x1 + forced (single-shot)" },
+
+    { "name": "pres_data",  "addr": 247, "len": 4, "format": "uint32_be", "comment": "0xF7..: pressure MSB + LSB + XLSB (20-bit in top 20 bits, low 12 bits include 4 XLSB nibble + leftover from next register which we mask out)" },
+    { "name": "temp_data",  "addr": 250, "len": 4, "format": "uint32_be", "comment": "0xFA..: temperature MSB + LSB + XLSB (top 20 bits)" }
+  ],
+
+  "init_sequence": [
+    { "register": "reset",  "write": 182, "delay_ms": 10, "comment": "0xE0 = 0xB6 — soft reset; chip needs ~2 ms to come back ready" },
+    { "register": "config", "write":   0, "delay_ms":  5, "comment": "0xF5: IIR filter off, fastest standby (0.5 ms). Has effect only while the chip is in sleep, which is the case right after reset before we issue any forced measurement." }
+  ],
+
+  "fields": [
+    { "label": "dig_T1",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_T1_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_T2",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_T2_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_T3",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_T3_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P1",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P1_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P2",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P2_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P3",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P3_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P4",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P4_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P5",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P5_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P6",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P6_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P7",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P7_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P8",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P8_reg", "transform": "raw", "visible": "settings.show_calibration" },
+    { "label": "dig_P9",      "qty": "raw", "unit": "", "precision": 0, "register": "dig_P9_reg", "transform": "raw", "visible": "settings.show_calibration" },
+
+    {
+      "label": "adc_temp",
+      "qty": "raw",
+      "unit": "",
+      "precision": 0,
+      "register": "temp_data",
+      "pre_read": [
+        { "register": "ctrl_meas", "write": 37, "comment": "0xF4 = 0x25: osr_t x1 + osr_p x1 + mode=forced — kick a single-shot measurement on every poll" }
+      ],
+      "read_delay_ms": 20,
+      "transform": "(raw >> 12) & 1048575",
+      "visible": "settings.show_calibration",
+      "comment": "Forced-mode measurement at osr=x1 completes in ~7-12 ms; 20 ms read_delay is safe slack. Pressure read happens in the same cycle and reuses this measurement (no second trigger needed)."
+    },
+    {
+      "label": "adc_pres",
+      "qty": "raw",
+      "unit": "",
+      "precision": 0,
+      "register": "pres_data",
+      "transform": "(raw >> 12) & 1048575",
+      "visible": "settings.show_calibration"
+    }
+  ],
+
+  "computed": [
+    {
+      "label": "t_fine",
+      "qty": "raw",
+      "unit": "",
+      "precision": 2,
+      "visible": false,
+      "expr": "((adc_temp/16384.0 - dig_t1/1024.0)*dig_t2) + ((adc_temp/131072.0 - dig_t1/8192.0)*(adc_temp/131072.0 - dig_t1/8192.0)*dig_t3)",
+      "comment": "Bosch t_fine: shared intermediate that the pressure compensation also needs. Hidden — never user-relevant."
+    },
+    {
+      "label": "Temperature",
+      "qty": "temperature",
+      "unit": "°C",
+      "precision": 2,
+      "expr": "t_fine / 5120.0",
+      "min": -40.0,
+      "max":  85.0
+    },
+    {
+      "label": "p_var1",
+      "qty": "raw",
+      "unit": "",
+      "precision": 4,
+      "visible": false,
+      "expr": "(((dig_p3*(t_fine/2.0 - 64000.0)*(t_fine/2.0 - 64000.0)/524288.0) + (dig_p2*(t_fine/2.0 - 64000.0)))/524288.0/32768.0 + 1.0) * dig_p1",
+      "comment": "Bosch var1 in the pressure path (after the dig_P1 multiplication). Combined into a single expression because HxExpr has no let-bindings. Hidden — never user-relevant."
+    },
+    {
+      "label": "p_var2",
+      "qty": "raw",
+      "unit": "",
+      "precision": 4,
+      "visible": false,
+      "expr": "(((t_fine/2.0 - 64000.0)*(t_fine/2.0 - 64000.0)*dig_p6/32768.0) + ((t_fine/2.0 - 64000.0)*dig_p5*2.0))/4.0 + dig_p4*65536.0"
+    },
+    {
+      "label": "p_raw",
+      "qty": "raw",
+      "unit": "",
+      "precision": 4,
+      "visible": false,
+      "expr": "(1048576.0 - adc_pres - p_var2/4096.0) * 6250.0 / p_var1",
+      "comment": "Intermediate compensated pressure before the second-order P7..P9 correction. Hidden — never user-relevant."
+    },
+    {
+      "label": "Pressure",
+      "qty": "pressure",
+      "unit": "hPa",
+      "precision": 2,
+      "expr": "(p_raw + (dig_p9*p_raw*p_raw/2147483648.0 + p_raw*dig_p8/32768.0 + dig_p7)/16.0) / 100.0",
+      "min": 300.0,
+      "max": 1100.0,
+      "comment": "Final pressure in hPa. Bosch's algorithm yields Pa; we divide by 100 so the live data view shows hPa with a sane precision."
+    }
+  ]
+}

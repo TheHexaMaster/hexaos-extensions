@@ -1,0 +1,16 @@
+{
+  "slug": "solis_s5_s6_hybrid",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Solis / Ginlong",
+  "model": "S5/S6 Hybrid (RHI / RAI / RAI-S series)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Solis S5/S6 Hybrid (RHI/RAI series) — Modbus RTU map for grid/battery/PV power, SOC and operational state.",
+  "tags": ["inverter", "hybrid", "modbus", "solar"],
+  "dependencies": []
+}

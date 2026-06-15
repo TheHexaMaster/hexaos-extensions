@@ -1,0 +1,9 @@
+{
+  "address": { "default": "0x69" },
+  "poll_ms": { "default": 1000 },
+  "settings": [
+    { "key": "frame_rate",      "label": "Frame rate",                "type": "enum", "default": 0, "options": ["10 Hz", "1 Hz"] },
+    { "key": "show_thermistor", "label": "Expose thermistor (ambient)", "type": "bool", "default": true },
+    { "key": "show_pixels",     "label": "Expose all 64 pixels",       "type": "bool", "default": true }
+  ]
+}

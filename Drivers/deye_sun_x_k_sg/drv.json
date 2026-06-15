@@ -1,0 +1,93 @@
+{
+  "read_timeout_ms": 1000,
+  "device_timeout_ms": 5000,
+  "device_pause_ms": 20,
+  "read_pause_ms": 20,
+  "stale_ms": 10000,
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+  "read_mode": "block",
+
+  "blocks": [
+    [3, 59, 30],
+    [3, 90, 32],
+    [3, 150, 30],
+    [3, 183, 14],
+    [3, 215, 11]
+  ],
+  "regs": [
+    {
+      "addr": 59, "func": 3, "type": "u16",
+      "name": "Inverter Status", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Standby", "1": "Self-Test", "2": "Normal",
+        "3": "Alarm", "4": "Fault", "5": "Charging", "6": "Discharging",
+        "7": "Bypass", "8": "Off-Grid"
+      }
+    },
+    { "addr": 70, "func": 3, "type": "u16", "name": "Daily Active Power",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 84, "func": 3, "type": "u16", "name": "PV1 Power",
+      "qty": "power", "unit": "W", "group": "mppt", "summary": true },
+    { "addr": 85, "func": 3, "type": "u16", "name": "PV2 Power",
+      "qty": "power", "unit": "W", "group": "mppt", "summary": true },
+
+    { "addr": 109, "func": 3, "type": "s16", "name": "Active Power Total",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+    { "addr": 111, "func": 3, "type": "u16", "name": "Grid Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+
+    { "addr": 90, "func": 3, "type": "u16", "name": "Grid State",
+      "qty": "none", "vclass": "state", "group": "ac",
+      "enum": { "0": "Off", "1": "On" } },
+    { "addr": 108, "func": 3, "type": "u16", "name": "Grid Voltage L1",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 115, "func": 3, "type": "s16", "name": "Grid Power Total",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+
+    { "addr": 167, "func": 3, "type": "u16", "name": "Load Power L1",
+      "qty": "power", "unit": "W", "group": "ac" },
+    { "addr": 178, "func": 3, "type": "u16", "name": "Load Power Total",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+
+    { "addr": 169, "func": 3, "type": "u16", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 170, "func": 3, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 175, "func": 3, "type": "u32", "name": "Battery Charge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 177, "func": 3, "type": "u32", "name": "Battery Discharge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 183, "func": 3, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.01, "group": "battery" },
+    { "addr": 184, "func": 3, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "group": "battery", "summary": true },
+    { "addr": 190, "func": 3, "type": "s16", "name": "Battery Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "battery" },
+    { "addr": 191, "func": 3, "type": "s16", "name": "Battery Current",
+      "qty": "current", "unit": "A", "scale": 0.01, "group": "battery", "summary": true },
+
+    { "addr": 215, "func": 3, "type": "u16", "name": "Inverter Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+    { "addr": 216, "func": 3, "type": "u16", "name": "Heatsink Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+
+    { "addr": 200, "func": 3, "type": "u16", "name": "Battery Max Charge Current",
+      "qty": "current", "unit": "A", "rw": true, "min": 0, "max": 240,
+      "group": "setting" },
+    { "addr": 201, "func": 3, "type": "u16", "name": "Battery Max Discharge Current",
+      "qty": "current", "unit": "A", "rw": true, "min": 0, "max": 240,
+      "group": "setting" },
+    { "addr": 217, "func": 3, "type": "u16", "name": "Battery SOC Cutoff",
+      "qty": "percentage", "unit": "%", "rw": true, "w": "slider",
+      "min": 5, "max": 50, "group": "setting" }
+  ]
+}

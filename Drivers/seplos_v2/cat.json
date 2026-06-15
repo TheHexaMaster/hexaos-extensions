@@ -1,0 +1,16 @@
+{
+  "slug": "seplos_v2",
+  "interface": "uart",
+  "protocol": "pace",
+  "category": "bms",
+  "manufacturer": "Seplos",
+  "model": "BMS V2 (Pusung, Suten)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Seplos V2 battery management — PACE protocol: per-cell voltages, pack current and SOC, temperature probes and alarm flags.",
+  "tags": ["bms", "battery", "pace", "lifepo4"],
+  "dependencies": []
+}

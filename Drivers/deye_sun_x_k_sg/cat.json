@@ -1,0 +1,16 @@
+{
+  "slug": "deye_sun_x_k_sg",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Deye",
+  "model": "SUN-X-K-SG (LP3 single-phase hybrid)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Deye / Sun-Synk single-phase hybrid (LP3 platform) — Modbus RTU map: grid/battery/PV power and energies, battery SOC, mode and alarm flags.",
+  "tags": ["inverter", "hybrid", "modbus", "single-phase"],
+  "dependencies": []
+}

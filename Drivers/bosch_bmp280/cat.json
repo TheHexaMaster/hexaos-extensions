@@ -1,0 +1,16 @@
+{
+  "slug": "bosch_bmp280",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "sensor",
+  "manufacturer": "Bosch",
+  "model": "BMP280",
+  "version": "1.2.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Atmospheric pressure + temperature sensor (Bosch BMP280). Reads the 12 factory calibration coefficients once at init and applies Bosch's compensation formulas via chained computed fields. Default address 0x77, or 0x76 when SDO is tied to GND. Operates in forced mode.",
+  "tags": ["pressure", "temperature", "barometer", "sensor"],
+  "dependencies": []
+}

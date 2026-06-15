@@ -1,0 +1,28 @@
+{
+  "address": { "default": "0x20" },
+  "poll_ms": { "default": 100 },
+  "settings": [
+    {
+      "key": "io_mask",
+      "label": "Pin direction (0=input, 1=output)",
+      "type": "bitmask16",
+      "default": 0,
+      "label_0": "IN",
+      "label_1": "OUT"
+    },
+    {
+      "key": "invert",
+      "label": "Polarity inversion (1=inverted)",
+      "type": "bitmask16",
+      "default": 0,
+      "label_0": "NORMAL",
+      "label_1": "INVERT"
+    },
+    {
+      "key": "state_mem",
+      "label": "Persist output state across reboots",
+      "type": "bool",
+      "default": false
+    }
+  ]
+}

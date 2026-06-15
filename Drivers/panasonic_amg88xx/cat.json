@@ -1,0 +1,16 @@
+{
+  "slug": "panasonic_amg88xx",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "sensor",
+  "manufacturer": "Panasonic",
+  "model": "AMG88xx",
+  "version": "2.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Grid-EYE 8x8 thermal IR array sensor (64 pixels). One template covers both AMG8831 (low gain) and AMG8833 (high gain) — identical register map. Address 0x69 default, 0x68 if AD_SELECT is tied low.",
+  "tags": ["thermal", "ir-array", "temperature", "sensor"],
+  "dependencies": []
+}

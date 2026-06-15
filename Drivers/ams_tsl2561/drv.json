@@ -1,0 +1,78 @@
+{
+  "device_id": {
+    "reg": 138, "len": 1, "expected": [16, 17, 18],
+    "comment": "0x8A = CMD|0x0A (ID register). Bits 7:4 = PARTNO (0001 = TSL2561), bits 3:0 = REVNO. Observed revisions across breakouts: 0x10, 0x11, 0x12. enforce omitted (default WARN-only) so unknown revisions of the same chip family don't get rejected."
+  },
+
+  "registers": [
+    { "name": "control",  "addr": 128, "len": 1, "format": "uint8",
+      "comment": "0x80 = CMD|reg0x00. CONTROL register: write 0x03 = power up, 0x00 = power down." },
+    { "name": "timing",   "addr": 129, "len": 1, "format": "uint8",
+      "comment": "0x81 = CMD|reg0x01. TIMING register: bit 4 = GAIN (0 = 1×, 1 = 16×), bits 1:0 = INTEG (0 = 13.7 ms, 1 = 101 ms, 2 = 402 ms, 3 = manual / not used here)." },
+    { "name": "ch0_word", "addr": 172, "len": 2, "format": "uint16_le", "cached": false,
+      "comment": "0xAC = CMD|WORD|reg0x0C. WORD bit (0x20) tells the chip to auto-increment: it returns DATA0LOW then DATA0HIGH → little-endian 16-bit CH0 reading." },
+    { "name": "ch1_word", "addr": 174, "len": 2, "format": "uint16_le", "cached": false,
+      "comment": "0xAE = CMD|WORD|reg0x0E. Same WORD trick for DATA1LOW/HIGH → little-endian 16-bit CH1 reading." }
+  ],
+
+  "init_sequence": [
+    { "register": "control", "write": 3, "delay_ms": 5,
+      "comment": "0x80 ← 0x03: power up. Datasheet specifies ~3.7 ms before the first integration cycle is valid; 5 ms covers it with margin." },
+    { "register": "timing",
+      "write_expr": "(int(settings.gain) << 4) | (int(settings.integration) & 3)",
+      "comment": "0x81 ← (GAIN<<4) | INTEG. Settings.gain is 0/1 → bit 4 of TIMING. Settings.integration is 0/1/2 → bits 1:0 of TIMING." }
+  ],
+
+  "fields": [
+    {
+      "label": "CH0 Full Spectrum",
+      "qty": "raw", "unit": "", "precision": 0,
+      "register": "ch0_word",
+      "visible": "settings.show_raw",
+      "comment": "Full-spectrum photodiode raw count (visible light + IR). 16-bit unsigned, saturates at 0xFFFF in bright direct light. Hidden by default; enable via show_raw setting for diagnostics."
+    },
+    {
+      "label": "CH1 IR",
+      "qty": "raw", "unit": "", "precision": 0,
+      "register": "ch1_word",
+      "visible": "settings.show_raw",
+      "comment": "IR-only photodiode raw count. The CH1/CH0 ratio classifies the light source (incandescent / fluorescent / daylight / IR-heavy) and selects which segment of the piecewise lux formula applies."
+    }
+  ],
+
+  "computed": [
+    {
+      "label": "ch0_scaled", "qty": "raw", "unit": "", "precision": 2, "visible": false,
+      "expr": "ch0_full_spectrum * if_else(settings.gain == 0, 16.0, 1.0) * if_else(settings.integration == 0, 322.0/11.0, if_else(settings.integration == 1, 322.0/81.0, 1.0))",
+      "comment": "CH0 rescaled to the manufacturer's reference operating point (16× gain, 402 ms integration). The piecewise lux formula was calibrated for that combination — any other gain/integration must be scaled back here, otherwise the lux output would be off by a fixed factor."
+    },
+    {
+      "label": "ch1_scaled", "qty": "raw", "unit": "", "precision": 2, "visible": false,
+      "expr": "ch1_ir * if_else(settings.gain == 0, 16.0, 1.0) * if_else(settings.integration == 0, 322.0/11.0, if_else(settings.integration == 1, 322.0/81.0, 1.0))"
+    },
+    {
+      "label": "ratio", "qty": "raw", "unit": "", "precision": 4, "visible": false,
+      "expr": "if_else(ch0_scaled <= 0.0, 1000.0, ch1_scaled / ch0_scaled)",
+      "comment": "CH1/CH0 ratio. 1000 sentinel when CH0 is zero (dark / not yet integrated) — falls through the lux piecewise table to the final 'else 0' branch."
+    },
+    {
+      "label": "lux", "qty": "raw", "unit": "", "precision": 2, "visible": false,
+      "condition": "settings.formula_mode == 0",
+      "expr": "max(0.0, if_else(ratio <= 0.50, 0.0304*ch0_scaled - 0.062*ch0_scaled*pow(ratio, 1.4), if_else(ratio <= 0.61, 0.0224*ch0_scaled - 0.031*ch1_scaled, if_else(ratio <= 0.80, 0.0128*ch0_scaled - 0.0153*ch1_scaled, if_else(ratio <= 1.30, 0.00146*ch0_scaled - 0.00112*ch1_scaled, 0.0)))))",
+      "comment": "SparkFun's 4-segment simplification of the TAOS lux table. Default — uses pow(ratio, 1.4) in the first segment to approximate the four Adafruit sub-segments below ratio=0.5 with a single curve. Slightly less accurate for IR-poor sources. Compiled only when settings.formula_mode == 0."
+    },
+    {
+      "label": "lux", "qty": "raw", "unit": "", "precision": 2, "visible": false,
+      "condition": "settings.formula_mode == 1",
+      "expr": "max(0.0, if_else(ratio <= 0.125, 0.0304*ch0_scaled - 0.0272*ch1_scaled, if_else(ratio <= 0.250, 0.0325*ch0_scaled - 0.0440*ch1_scaled, if_else(ratio <= 0.375, 0.0351*ch0_scaled - 0.0544*ch1_scaled, if_else(ratio <= 0.50, 0.0381*ch0_scaled - 0.0624*ch1_scaled, if_else(ratio <= 0.61, 0.0224*ch0_scaled - 0.031*ch1_scaled, if_else(ratio <= 0.80, 0.0128*ch0_scaled - 0.0153*ch1_scaled, if_else(ratio <= 1.30, 0.00146*ch0_scaled - 0.00112*ch1_scaled, 0.0))))))))",
+      "comment": "Adafruit's 8-segment piecewise table — manufacturer reference for the T/FN/CL package. All segments are pure B*ch0 - M*ch1 linear (no pow). Higher accuracy for IR-poor sources (sun through window, LEDs). Compiled only when settings.formula_mode == 1. Same label `lux` as the SparkFun variant — only one passes the condition gate per device instance, so the Illuminance expression below resolves `lux` to whichever variant is active."
+    },
+    {
+      "label": "Illuminance",
+      "qty": "illuminance", "unit": "lx", "precision": 2,
+      "expr": "if_else(max(ch0_full_spectrum, ch1_ir) >= if_else(settings.integration == 0, 4900.0, if_else(settings.integration == 1, 37000.0, 65000.0)), 0.0304*ch0_scaled, lux)",
+      "min": 0.0, "max": 100000.0,
+      "comment": "Final lux output with saturation clamp. When CH0 or CH1 raw count hits the integration-time saturation threshold (4900 / 37000 / 65000 for 13.7/101/402 ms), the output switches from the piecewise table to a pure linear estimate `0.0304 * ch0_scaled` — the asymptotic ceiling of segment A at ratio=0 (zero IR). This stops the formula's natural fold-back behaviour past saturation (where CH0 is stuck and rising CH1 makes ratio climb artificially, dragging lux downward). Practical effect: under default 16×/402 ms settings the output plateaus at ~1992 lx when saturated instead of dropping back through zero; under 1× / shorter integration the plateau scales correspondingly (~31 872 lx for 1×/402 ms, ~71 925 lx for 1×/101 ms). User sees a stable 'sensor is at its max range — lower gain / shorten integration' indicator instead of nonsensical decreasing values. Below saturation, the `lux` local resolves to either the SparkFun or Adafruit variant — exactly one of them was compiled at parse time based on settings.formula_mode (via the `condition` field), so only one formula is evaluated each cycle. Range hint: indoor 100–500 lx, office 500 lx, overcast 1 000–10 000 lx, bright daylight 10 000–25 000 lx, direct sun easily saturates 16× gain."
+    }
+  ]
+}

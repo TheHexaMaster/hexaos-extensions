@@ -1,0 +1,16 @@
+{
+  "slug": "goodwe_es_em",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "GoodWe",
+  "model": "ES / EM Hybrid (3-8 kW)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "GoodWe ES/EM hybrid (3-8 kW) — Modbus RTU map covering grid/battery/PV instantaneous, energy counters and inverter state.",
+  "tags": ["inverter", "hybrid", "modbus"],
+  "dependencies": []
+}

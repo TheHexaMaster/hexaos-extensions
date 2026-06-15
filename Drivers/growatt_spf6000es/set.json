@@ -1,0 +1,13 @@
+{
+  "modbus_addr": { "default": 1, "min": 1, "max": 247 },
+  "baud_rate":   { "default": 9600, "options": [1200,2400,4800,9600,19200,38400,57600,115200] },
+  "parity":      { "default": "N", "options": ["N","E","O"] },
+  "stop_bits":   { "default": 1, "options": [1,2] },
+  "settings": [
+    { "key": "read_timeout_ms",   "label": "Read Timeout",   "type": "int", "unit": "ms", "default": 1000, "min": 50,  "max": 10000 },
+    { "key": "device_timeout_ms", "label": "Device Timeout",  "type": "int", "unit": "ms", "default": 5000, "min": 100, "max": 30000 },
+    { "key": "device_pause_ms",   "label": "Device Pause",    "type": "int", "unit": "ms", "default": 20,   "min": 0,   "max": 5000 },
+    { "key": "read_pause_ms",     "label": "Read Pause",      "type": "int", "unit": "ms", "default": 20,   "min": 0,   "max": 5000 },
+    { "key": "stale_ms",          "label": "Stale Timeout",   "type": "int", "unit": "ms", "default": 10000,"min": 0,   "max": 120000 }
+  ]
+}

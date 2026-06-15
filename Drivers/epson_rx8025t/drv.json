@@ -1,0 +1,41 @@
+{
+  "init_sequence": [
+    { "reg": 14, "write": 32, "comment": "CTRL1 = 0x20: 24-hour mode, USEL=0, /INT disabled, no alarms" },
+    { "reg": 15, "write": 0,  "comment": "CTRL2 = 0x00: clear PON+VLF flags after configuration" }
+  ],
+
+  "rtc": {
+    "validity": {
+      "reg": 15,
+      "len": 1,
+      "valid_expr": "(raw & 18) == 0",
+      "comment": "PON (bit4=0x10) + VLF (bit1=0x02) — both clear means time is valid"
+    },
+    "read": {
+      "reg": 0,
+      "len": 7,
+      "fields": [
+        { "name": "seconds", "byte": 0, "mask": 127, "bcd": true },
+        { "name": "minutes", "byte": 1, "mask": 127, "bcd": true },
+        { "name": "hours",   "byte": 2, "mask":  63, "bcd": true },
+        { "name": "dow",     "byte": 3, "mask":   7, "bcd": false },
+        { "name": "day",     "byte": 4, "mask":  63, "bcd": true },
+        { "name": "month",   "byte": 5, "mask":  31, "bcd": true },
+        { "name": "year",    "byte": 6, "mask": 255, "bcd": true, "offset": 2000 }
+      ]
+    },
+    "write": {
+      "reg": 0,
+      "len": 7,
+      "fields": [
+        { "name": "seconds", "byte": 0, "mask": 127, "bcd": true },
+        { "name": "minutes", "byte": 1, "mask": 127, "bcd": true },
+        { "name": "hours",   "byte": 2, "mask":  63, "bcd": true },
+        { "name": "dow",     "byte": 3, "mask":   7, "bcd": false },
+        { "name": "day",     "byte": 4, "mask":  63, "bcd": true },
+        { "name": "month",   "byte": 5, "mask":  31, "bcd": true },
+        { "name": "year",    "byte": 6, "mask": 255, "bcd": true, "offset": 2000 }
+      ]
+    }
+  }
+}

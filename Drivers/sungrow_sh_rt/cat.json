@@ -1,0 +1,16 @@
+{
+  "slug": "sungrow_sh_rt",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Sungrow",
+  "model": "SH-RT / SG Hybrid (3-25 kW residential)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Sungrow SH-RT / SG residential hybrid (3-25 kW) — Modbus RTU map covering grid/battery/PV power, energies and inverter state.",
+  "tags": ["inverter", "hybrid", "modbus", "solar"],
+  "dependencies": []
+}

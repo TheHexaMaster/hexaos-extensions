@@ -1,0 +1,16 @@
+{
+  "slug": "growatt_spe_hvm_g2",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Growatt",
+  "model": "SPE 3.5-7KTL HVM-G2 (single-phase hybrid, LV battery 48 V)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Growatt SPE 3.5-7KTL HVM-G2 single-phase hybrid (48 V LV battery) — Modbus RTU map covering PV, battery, grid and load metrics.",
+  "tags": ["inverter", "hybrid", "single-phase", "modbus"],
+  "dependencies": []
+}

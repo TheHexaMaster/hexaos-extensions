@@ -1,0 +1,179 @@
+{
+  "read_mode": "block",
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+
+  "blocks": [
+    [4, 0, 36],
+    [3, 40, 16],
+    [3, 56, 8]
+  ],
+  "regs": [
+    { "addr": 0, "func": 4, "type": "u16", "name": "Inverter Voltage L1",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 1, "func": 4, "type": "u16", "name": "Inverter Current L1",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "ac" },
+    { "addr": 2, "func": 4, "type": "s16", "name": "Inverter Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+
+    { "addr": 3, "func": 4, "type": "u16", "name": "PV1 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 4, "func": 4, "type": "u16", "name": "PV2 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 5, "func": 4, "type": "u16", "name": "PV1 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 6, "func": 4, "type": "u16", "name": "PV2 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+
+    { "addr": 7, "func": 4, "type": "u16", "name": "Inverter Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+    { "addr": 8, "func": 4, "type": "u16", "name": "Inverter Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+
+    {
+      "addr": 9, "func": 4, "type": "u16",
+      "name": "Inverter Status", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Wait", "1": "Check", "2": "Normal",
+        "3": "Fault", "4": "Permanent Fault", "5": "Update",
+        "6": "EPS Check", "7": "EPS Mode", "8": "Self-Test",
+        "9": "Idle"
+      }
+    },
+
+    { "addr": 10, "func": 4, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 12, "func": 4, "type": "u32", "name": "Run Hours Total",
+      "qty": "none", "unit": "h", "group": "system" },
+    { "addr": 14, "func": 4, "type": "u16", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 15, "func": 4, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.01, "group": "battery" },
+    { "addr": 16, "func": 4, "type": "s16", "name": "Battery Current",
+      "qty": "current", "unit": "A", "scale": 0.01, "group": "battery", "summary": true },
+    { "addr": 17, "func": 4, "type": "s16", "name": "Battery Power",
+      "qty": "power", "unit": "W", "group": "battery", "summary": true },
+    { "addr": 18, "func": 4, "type": "s16", "name": "Battery Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "battery" },
+    { "addr": 19, "func": 4, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "group": "battery", "summary": true },
+    { "addr": 20, "func": 4, "type": "u16", "name": "Battery Voltage Difference",
+      "qty": "voltage", "unit": "V", "scale": 0.01, "group": "battery" },
+
+    { "addr": 21, "func": 4, "type": "s16", "name": "Charge from Grid Power",
+      "qty": "power", "unit": "W", "group": "ac" },
+    { "addr": 22, "func": 4, "type": "u16", "name": "Power Factor",
+      "qty": "none", "scale": 0.001, "group": "ac" },
+
+    { "addr": 23, "func": 4, "type": "s16", "name": "Discharge from Battery Power",
+      "qty": "power", "unit": "W", "group": "battery" },
+    { "addr": 24, "func": 4, "type": "u16", "name": "Discharge from PV Power",
+      "qty": "power", "unit": "W", "group": "mppt" },
+
+    { "addr": 25, "func": 4, "type": "u16", "name": "Charge from Grid Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+    { "addr": 26, "func": 4, "type": "u16", "name": "Discharge to Grid Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+
+    {
+      "addr": 27, "func": 4, "type": "u16",
+      "name": "Battery Work Mode", "qty": "none", "vclass": "state", "group": "battery",
+      "enum": {
+        "0": "Self-Consumption", "1": "Standby",
+        "2": "Charging", "3": "Discharging",
+        "4": "Backup Mode", "5": "Off-Grid"
+      }
+    },
+
+    { "addr": 28, "func": 4, "type": "u16", "name": "EPS Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 29, "func": 4, "type": "u16", "name": "EPS Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "ac" },
+    { "addr": 30, "func": 4, "type": "u16", "name": "EPS Power",
+      "qty": "power", "unit": "W", "group": "ac" },
+    { "addr": 31, "func": 4, "type": "u16", "name": "EPS Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+
+    { "addr": 32, "func": 4, "type": "u32", "name": "EPS Energy Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+    { "addr": 34, "func": 4, "type": "u32", "name": "EPS Energy Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+
+    { "addr": 40, "func": 3, "type": "u16",
+      "name": "Modbus Address", "qty": "none",
+      "rw": true, "min": 1, "max": 247, "group": "config" },
+    { "addr": 41, "func": 3, "type": "u16",
+      "name": "Active Power Limit", "qty": "percentage", "unit": "%",
+      "rw": true, "w": "slider", "min": 0, "max": 100, "group": "setting" },
+    { "addr": 42, "func": 3, "type": "u16",
+      "name": "Reactive Power Limit", "qty": "percentage", "unit": "%",
+      "scale": 0.01, "rw": true, "min": -100, "max": 100, "group": "setting" },
+
+    { "addr": 43, "func": 3, "type": "u16",
+      "name": "Charge Period 1: Start (HHMM)", "qty": "none",
+      "rw": true, "min": 0, "max": 2359, "group": "setting" },
+    { "addr": 44, "func": 3, "type": "u16",
+      "name": "Charge Period 1: End (HHMM)", "qty": "none",
+      "rw": true, "min": 0, "max": 2359, "group": "setting" },
+    { "addr": 45, "func": 3, "type": "u16",
+      "name": "Discharge Period 1: Start (HHMM)", "qty": "none",
+      "rw": true, "min": 0, "max": 2359, "group": "setting" },
+    { "addr": 46, "func": 3, "type": "u16",
+      "name": "Discharge Period 1: End (HHMM)", "qty": "none",
+      "rw": true, "min": 0, "max": 2359, "group": "setting" },
+
+    { "addr": 47, "func": 3, "type": "u16",
+      "name": "Charger Use Mode", "qty": "none", "vclass": "state",
+      "rw": true, "group": "setting",
+      "enum": {
+        "0": "Self Use", "1": "Force Time Use",
+        "2": "Backup Mode", "3": "Feed-in Priority"
+      } },
+    { "addr": 48, "func": 3, "type": "u16",
+      "name": "Battery Min Capacity", "qty": "percentage", "unit": "%",
+      "rw": true, "w": "slider", "min": 10, "max": 100, "group": "setting" },
+    { "addr": 49, "func": 3, "type": "u16",
+      "name": "Battery Charge Float Voltage", "qty": "voltage", "unit": "V",
+      "scale": 0.1, "rw": true, "min": 40.0, "max": 60.0,
+      "precision": 1, "group": "config" },
+    { "addr": 50, "func": 3, "type": "u16",
+      "name": "Battery Discharge Cut-off Voltage", "qty": "voltage", "unit": "V",
+      "scale": 0.1, "rw": true, "min": 40.0, "max": 50.0,
+      "precision": 1, "group": "config" },
+    { "addr": 51, "func": 3, "type": "u16",
+      "name": "Battery Type", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": {
+        "0": "Lithium", "1": "Lead Acid", "2": "User"
+      } },
+    { "addr": 52, "func": 3, "type": "u16",
+      "name": "Battery Charge Max Current", "qty": "current", "unit": "A",
+      "scale": 0.1, "rw": true, "min": 0, "max": 200, "group": "setting" },
+    { "addr": 53, "func": 3, "type": "u16",
+      "name": "Battery Discharge Max Current", "qty": "current", "unit": "A",
+      "scale": 0.1, "rw": true, "min": 0, "max": 200, "group": "setting" },
+
+    { "addr": 56, "func": 3, "type": "u16",
+      "name": "Power On / Off", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0,
+      "group": "setting" },
+    { "addr": 57, "func": 3, "type": "u16",
+      "name": "EPS Mute", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "setting" },
+    { "addr": 58, "func": 3, "type": "u16",
+      "name": "Manual Mode Control", "qty": "none", "vclass": "state",
+      "rw": true, "group": "setting",
+      "enum": {
+        "0": "Stop Charge & Discharge",
+        "1": "Force Charge", "2": "Force Discharge"
+      } }
+  ]
+}

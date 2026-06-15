@@ -1,0 +1,42 @@
+{
+  "registers": [
+    { "name": "input",     "addr": 0, "len": 2, "format": "uint16_le", "cached": false },
+    { "name": "output",    "addr": 2, "len": 2, "format": "uint16_le", "cached": true,  "persist": true },
+    { "name": "inversion", "addr": 4, "len": 2, "format": "uint16_le", "cached": true  },
+    { "name": "direction", "addr": 6, "len": 2, "format": "uint16_le", "cached": true  }
+  ],
+
+  "init_sequence": [
+    {
+      "register": "output",
+      "write": 0,
+      "comment": "Clear all outputs before enabling them"
+    },
+    {
+      "register": "inversion",
+      "write_expr": "settings.invert",
+      "comment": "Polarity inversion bitmask"
+    },
+    {
+      "register": "direction",
+      "write_expr": "~settings.io_mask & 0xFFFF",
+      "comment": "Device convention: 1=input, 0=output. io_mask uses the opposite (1=output)."
+    }
+  ],
+
+  "field_templates": [
+    {
+      "repeat": 16,
+      "label": "Pin {i}",
+      "register": "input",
+      "bit": "{i}",
+      "type": "bool",
+      "writable_when": "((settings.io_mask >> {i}) & 1) == 1",
+      "write_register": "output",
+      "write_method": "bit_set",
+      "write_bit": "{i}",
+      "write_control": "toggle",
+      "comment": "Input register reflects the physical line; writes target the output register. For pins configured as inputs, the output write is gated off by writable_when."
+    }
+  ]
+}

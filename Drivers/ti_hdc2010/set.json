@@ -1,0 +1,13 @@
+{
+  "address": { "default": "0x40" },
+  "poll_ms": { "default": 1000 },
+  "settings": [
+    {
+      "key": "meas_mode",
+      "label": "Measurement mode",
+      "type": "enum",
+      "default": 0,
+      "options": ["T+H", "T only", "H only"]
+    }
+  ]
+}

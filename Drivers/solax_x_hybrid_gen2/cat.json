@@ -1,0 +1,16 @@
+{
+  "slug": "solax_x_hybrid_gen2",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Solax Power",
+  "model": "X1 / X3 Hybrid Gen2 (3-7.5 kW, ~2018-2020)",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Solax X1/X3 Hybrid Gen2 (2018-2020) — Modbus RTU map for grid/battery/PV power, SOC and energy counters.",
+  "tags": ["inverter", "hybrid", "modbus", "solar"],
+  "dependencies": []
+}

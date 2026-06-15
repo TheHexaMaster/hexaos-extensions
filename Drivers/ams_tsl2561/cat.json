@@ -1,0 +1,16 @@
+{
+  "slug": "ams_tsl2561",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "sensor",
+  "manufacturer": "AMS",
+  "model": "TSL2561",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Digital ambient light sensor with dual photodiodes — CH0 = full spectrum, CH1 = IR only. Illuminance in lux is derived from the CH1/CH0 ratio via the manufacturer's piecewise formula. ADDR pin selects 0x29/0x39/0x49 (0x39 default).",
+  "tags": ["light", "lux", "illuminance", "sensor"],
+  "dependencies": []
+}

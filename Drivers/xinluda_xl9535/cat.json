@@ -1,0 +1,16 @@
+{
+  "slug": "xinluda_xl9535",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "expander",
+  "manufacturer": "XINLUDA",
+  "model": "XL9535",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-05-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "16-channel I2C GPIO expander with polarity inversion. Each pin is individually configurable as input or output via the io_mask setting.",
+  "tags": ["16 Bit", "IO Expander", "GPIO"],
+  "dependencies": []
+}

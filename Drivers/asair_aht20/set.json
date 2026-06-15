@@ -1,0 +1,5 @@
+{
+  "address": { "default": "0x38" },
+  "poll_ms": { "default": 1500 },
+  "settings": []
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "microcrystal_rv3028",
+  "interface": "i2c",
+  "protocol": "rtc",
+  "category": "rtc",
+  "manufacturer": "Micro Crystal",
+  "model": "RV-3028-C7",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Ultra-low-power I2C RTC with EEPROM-backed configuration. Time stored as packed BCD across registers 0x00..0x06.",
+  "tags": ["RTC", "Low Power", "BCD"],
+  "dependencies": []
+}

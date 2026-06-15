@@ -1,0 +1,60 @@
+{
+  "read_mode": "block",
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+
+  "blocks": [
+    [4, 3034, 30],
+    [4, 3072, 30],
+    [4, 3132, 30],
+    [4, 3168, 16]
+  ],
+  "regs": [
+    { "addr": 3034, "func": 4, "type": "u16", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.01,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 3036, "func": 4, "type": "u32", "name": "Solar This Month",
+      "qty": "energy", "unit": "kWh", "vclass": "total_increasing", "group": "energy" },
+    { "addr": 3038, "func": 4, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 3048, "func": 4, "type": "u16", "name": "PV1 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 3049, "func": 4, "type": "u16", "name": "PV1 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 3050, "func": 4, "type": "u16", "name": "PV2 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 3051, "func": 4, "type": "u16", "name": "PV2 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 3056, "func": 4, "type": "s32", "name": "AC Active Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+
+    { "addr": 3072, "func": 4, "type": "u16", "name": "AC Voltage L1",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 3078, "func": 4, "type": "u16", "name": "AC Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+    { "addr": 3092, "func": 4, "type": "u16", "name": "AC Current L1",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "ac" },
+
+    { "addr": 3132, "func": 4, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "battery" },
+    { "addr": 3133, "func": 4, "type": "u16", "name": "Battery Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 3138, "func": 4, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "group": "battery", "summary": true },
+    { "addr": 3139, "func": 4, "type": "u16", "name": "Battery SOH",
+      "qty": "percentage", "unit": "%", "group": "battery" },
+    { "addr": 3140, "func": 4, "type": "s16", "name": "Battery Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "battery" },
+    { "addr": 3148, "func": 4, "type": "s16", "name": "Battery Power",
+      "qty": "power", "unit": "W", "group": "battery", "summary": true },
+
+    { "addr": 3160, "func": 4, "type": "u16", "name": "Inverter Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+    { "addr": 3168, "func": 4, "type": "s32", "name": "House Load Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+    { "addr": 3170, "func": 4, "type": "s32", "name": "Grid Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true }
+  ]
+}

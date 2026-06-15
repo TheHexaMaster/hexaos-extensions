@@ -1,0 +1,688 @@
+{
+  "catalog_version": 1,
+  "generated": "2026-06-15T14:29:14Z",
+  "source": "https://github.com/TheHexaMaster/HexaOS-Extensions",
+  "count": 23,
+  "drivers": [
+    {
+      "slug": "ams_tsl2561",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "AMS",
+      "model": "TSL2561",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Digital ambient light sensor with dual photodiodes — CH0 = full spectrum, CH1 = IR only. Illuminance in lux is derived from the CH1/CH0 ratio via the manufacturer's piecewise formula. ADDR pin selects 0x29/0x39/0x49 (0x39 default).",
+      "tags": [
+        "light",
+        "lux",
+        "illuminance",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/ams_tsl2561",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ams_tsl2561/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ams_tsl2561/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ams_tsl2561/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ams_tsl2561/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ams_tsl2561/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/ams_tsl2561"
+      }
+    },
+    {
+      "slug": "asair_aht20",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "ASAIR",
+      "model": "AHT20",
+      "version": "2.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Calibrated digital humidity + temperature sensor (Aosong AHT20). Pure command-protocol chip with no register-style addressing: trigger command, ~80 ms conversion, bare 7-byte read with CRC8. Address 0x38 fixed.",
+      "tags": [
+        "humidity",
+        "temperature",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/asair_aht20",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/asair_aht20/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/asair_aht20/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/asair_aht20/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/asair_aht20/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/asair_aht20/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/asair_aht20"
+      }
+    },
+    {
+      "slug": "bosch_bmp280",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "Bosch",
+      "model": "BMP280",
+      "version": "1.2.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Atmospheric pressure + temperature sensor (Bosch BMP280). Reads the 12 factory calibration coefficients once at init and applies Bosch's compensation formulas via chained computed fields. Default address 0x77, or 0x76 when SDO is tied to GND. Operates in forced mode.",
+      "tags": [
+        "pressure",
+        "temperature",
+        "barometer",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/bosch_bmp280",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/bosch_bmp280/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/bosch_bmp280/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/bosch_bmp280/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/bosch_bmp280/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/bosch_bmp280/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/bosch_bmp280"
+      }
+    },
+    {
+      "slug": "deye_sun_x_k_sg",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Deye",
+      "model": "SUN-X-K-SG (LP3 single-phase hybrid)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Deye / Sun-Synk single-phase hybrid (LP3 platform) — Modbus RTU map: grid/battery/PV power and energies, battery SOC, mode and alarm flags.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus",
+        "single-phase"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/deye_sun_x_k_sg",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/deye_sun_x_k_sg/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/deye_sun_x_k_sg/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/deye_sun_x_k_sg/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/deye_sun_x_k_sg/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/deye_sun_x_k_sg/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/deye_sun_x_k_sg"
+      }
+    },
+    {
+      "slug": "epson_rx8025t",
+      "interface": "i2c",
+      "protocol": "rtc",
+      "category": "rtc",
+      "manufacturer": "Epson",
+      "model": "RX8025T",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Low-power I2C RTC with backup battery support. Time stored as packed BCD across registers 0x00..0x06.",
+      "tags": [
+        "RTC",
+        "Backup Battery",
+        "BCD"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/epson_rx8025t",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/epson_rx8025t"
+      }
+    },
+    {
+      "slug": "goodix_gt911",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "touch",
+      "manufacturer": "Goodix",
+      "model": "GT911",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Goodix GT911 capacitive touch controller for 1024x600-class TFT panels. Supports up to 5 simultaneous touch points; this template publishes the first point only (x, y, pressed).",
+      "tags": [
+        "Touch",
+        "Capacitive",
+        "TFT"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/goodix_gt911",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodix_gt911/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodix_gt911/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodix_gt911/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodix_gt911/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodix_gt911/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/goodix_gt911"
+      }
+    },
+    {
+      "slug": "goodwe_es_em",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "GoodWe",
+      "model": "ES / EM Hybrid (3-8 kW)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "GoodWe ES/EM hybrid (3-8 kW) — Modbus RTU map covering grid/battery/PV instantaneous, energy counters and inverter state.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/goodwe_es_em",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodwe_es_em/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodwe_es_em/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodwe_es_em/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodwe_es_em/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/goodwe_es_em/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/goodwe_es_em"
+      }
+    },
+    {
+      "slug": "growatt_spe_8000_12000es",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Growatt",
+      "model": "SPE 8000-12000ES (off-grid storage hybrid)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Growatt SPE 8000-12000ES off-grid storage hybrid — Modbus RTU map for solar/battery/load power, energies and fault flags.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "off-grid",
+        "modbus"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/growatt_spe_8000_12000es",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_8000_12000es/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_8000_12000es/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_8000_12000es/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_8000_12000es/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_8000_12000es/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/growatt_spe_8000_12000es"
+      }
+    },
+    {
+      "slug": "growatt_spe_hvm_g2",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Growatt",
+      "model": "SPE 3.5-7KTL HVM-G2 (single-phase hybrid, LV battery 48 V)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Growatt SPE 3.5-7KTL HVM-G2 single-phase hybrid (48 V LV battery) — Modbus RTU map covering PV, battery, grid and load metrics.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "single-phase",
+        "modbus"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/growatt_spe_hvm_g2",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_hvm_g2/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_hvm_g2/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_hvm_g2/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_hvm_g2/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spe_hvm_g2/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/growatt_spe_hvm_g2"
+      }
+    },
+    {
+      "slug": "growatt_spf6000es",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Growatt",
+      "model": "SPF6000ES",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Growatt SPF6000ES off-grid inverter — Modbus RTU map for PV, battery, grid, load and protection flags.",
+      "tags": [
+        "inverter",
+        "off-grid",
+        "modbus"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/growatt_spf6000es",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spf6000es/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spf6000es/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spf6000es/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spf6000es/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_spf6000es/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/growatt_spf6000es"
+      }
+    },
+    {
+      "slug": "growatt_sph",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Growatt",
+      "model": "SPH 3000-10000 TL-BL/TL-BH (hybrid)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Growatt SPH 3000-10000 TL-BL/TL-BH hybrid — Modbus RTU map covering PV strings, battery, grid import/export and energies.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/growatt_sph",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_sph/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_sph/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_sph/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_sph/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/growatt_sph/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/growatt_sph"
+      }
+    },
+    {
+      "slug": "injoinic_ip5306",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "Injoinic",
+      "model": "IP5306",
+      "version": "2.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Power bank SoC with integrated charger, boost converter, and battery gauge. I2C variant only (e.g. PB0A module, M5Stack Core). Provides 4-step battery level, charge status, and configurable charge parameters.",
+      "tags": [
+        "power",
+        "battery",
+        "charger",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/injoinic_ip5306",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/injoinic_ip5306/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/injoinic_ip5306/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/injoinic_ip5306/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/injoinic_ip5306/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/injoinic_ip5306/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/injoinic_ip5306"
+      }
+    },
+    {
+      "slug": "maxim_ds3232",
+      "interface": "i2c",
+      "protocol": "rtc",
+      "category": "rtc",
+      "manufacturer": "Maxim Integrated",
+      "model": "DS3232",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Extremely accurate I2C RTC with TCXO and SRAM. Time stored as packed BCD across registers 0x00..0x06; OSF (Oscillator Stop Flag) at status register 0x0F bit7.",
+      "tags": [
+        "RTC",
+        "TCXO",
+        "BCD"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/maxim_ds3232",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/maxim_ds3232/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/maxim_ds3232/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/maxim_ds3232/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/maxim_ds3232/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/maxim_ds3232/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/maxim_ds3232"
+      }
+    },
+    {
+      "slug": "microcrystal_rv3028",
+      "interface": "i2c",
+      "protocol": "rtc",
+      "category": "rtc",
+      "manufacturer": "Micro Crystal",
+      "model": "RV-3028-C7",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Ultra-low-power I2C RTC with EEPROM-backed configuration. Time stored as packed BCD across registers 0x00..0x06.",
+      "tags": [
+        "RTC",
+        "Low Power",
+        "BCD"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/microcrystal_rv3028",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/microcrystal_rv3028/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/microcrystal_rv3028/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/microcrystal_rv3028/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/microcrystal_rv3028/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/microcrystal_rv3028/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/microcrystal_rv3028"
+      }
+    },
+    {
+      "slug": "panasonic_amg88xx",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "Panasonic",
+      "model": "AMG88xx",
+      "version": "2.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Grid-EYE 8x8 thermal IR array sensor (64 pixels). One template covers both AMG8831 (low gain) and AMG8833 (high gain) — identical register map. Address 0x69 default, 0x68 if AD_SELECT is tied low.",
+      "tags": [
+        "thermal",
+        "ir-array",
+        "temperature",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/panasonic_amg88xx",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/panasonic_amg88xx/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/panasonic_amg88xx/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/panasonic_amg88xx/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/panasonic_amg88xx/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/panasonic_amg88xx/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/panasonic_amg88xx"
+      }
+    },
+    {
+      "slug": "seplos_v2",
+      "interface": "uart",
+      "protocol": "pace",
+      "category": "bms",
+      "manufacturer": "Seplos",
+      "model": "BMS V2 (Pusung, Suten)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Seplos V2 battery management — PACE protocol: per-cell voltages, pack current and SOC, temperature probes and alarm flags.",
+      "tags": [
+        "bms",
+        "battery",
+        "pace",
+        "lifepo4"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/seplos_v2",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/seplos_v2/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/seplos_v2/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/seplos_v2/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/seplos_v2/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/seplos_v2/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/seplos_v2"
+      }
+    },
+    {
+      "slug": "solax_x_hybrid_gen2",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Solax Power",
+      "model": "X1 / X3 Hybrid Gen2 (3-7.5 kW, ~2018-2020)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Solax X1/X3 Hybrid Gen2 (2018-2020) — Modbus RTU map for grid/battery/PV power, SOC and energy counters.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus",
+        "solar"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/solax_x_hybrid_gen2",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen2/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen2/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen2/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen2/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen2/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/solax_x_hybrid_gen2"
+      }
+    },
+    {
+      "slug": "solax_x_hybrid_gen3",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Solax Power",
+      "model": "X1 / X3 Hybrid Gen3 (3-15 kW)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Solax X1/X3 Hybrid Gen3 (3-15 kW) — Modbus RTU map covering all-phase grid metrics, PV strings, battery and energy counters.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus",
+        "solar"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/solax_x_hybrid_gen3",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen3/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen3/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen3/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen3/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solax_x_hybrid_gen3/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/solax_x_hybrid_gen3"
+      }
+    },
+    {
+      "slug": "solis_s5_s6_hybrid",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Solis / Ginlong",
+      "model": "S5/S6 Hybrid (RHI / RAI / RAI-S series)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Solis S5/S6 Hybrid (RHI/RAI series) — Modbus RTU map for grid/battery/PV power, SOC and operational state.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus",
+        "solar"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/solis_s5_s6_hybrid",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/solis_s5_s6_hybrid"
+      }
+    },
+    {
+      "slug": "sungrow_sh_rt",
+      "interface": "uart",
+      "protocol": "modbus_rtu",
+      "category": "inverter",
+      "manufacturer": "Sungrow",
+      "model": "SH-RT / SG Hybrid (3-25 kW residential)",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Sungrow SH-RT / SG residential hybrid (3-25 kW) — Modbus RTU map covering grid/battery/PV power, energies and inverter state.",
+      "tags": [
+        "inverter",
+        "hybrid",
+        "modbus",
+        "solar"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/sungrow_sh_rt",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/sungrow_sh_rt/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/sungrow_sh_rt/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/sungrow_sh_rt/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/sungrow_sh_rt/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/sungrow_sh_rt/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/sungrow_sh_rt"
+      }
+    },
+    {
+      "slug": "ti_hdc2010",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "Texas Instruments",
+      "model": "HDC2010",
+      "version": "2.0.1",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Low-power digital humidity and temperature sensor.",
+      "tags": [
+        "humidity",
+        "temperature",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/ti_hdc2010",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_hdc2010/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_hdc2010/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_hdc2010/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_hdc2010/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_hdc2010/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/ti_hdc2010"
+      }
+    },
+    {
+      "slug": "ti_ina3221",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "sensor",
+      "manufacturer": "Texas Instruments",
+      "model": "INA3221",
+      "version": "3.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "3-channel I2C current/voltage monitor with configurable shunt resistance, averaging, and per-channel enable.",
+      "tags": [
+        "current",
+        "voltage",
+        "power-monitor",
+        "sensor"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/ti_ina3221",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_ina3221/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_ina3221/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_ina3221/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_ina3221/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/ti_ina3221/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/ti_ina3221"
+      }
+    },
+    {
+      "slug": "xinluda_xl9535",
+      "interface": "i2c",
+      "protocol": "none",
+      "category": "expander",
+      "manufacturer": "XINLUDA",
+      "model": "XL9535",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-05-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "16-channel I2C GPIO expander with polarity inversion. Each pin is individually configurable as input or output via the io_mask setting.",
+      "tags": [
+        "16 Bit",
+        "IO Expander",
+        "GPIO"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/xinluda_xl9535",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/xinluda_xl9535/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/xinluda_xl9535/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/xinluda_xl9535/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/xinluda_xl9535/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/xinluda_xl9535/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/xinluda_xl9535"
+      }
+    }
+  ]
+}

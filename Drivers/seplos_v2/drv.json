@@ -1,0 +1,75 @@
+{
+  "ver":  32,
+  "cid1": 70,
+
+  "commands": [
+    {
+      "cid2": 66,
+      "name": "telemetry",
+      "poll_ms": 0,
+      "request": "addr",
+
+      "fields": [
+        { "name": "infoflag",   "decode": "u8",     "hidden": true },
+        { "name": "flag",       "decode": "u8",     "hidden": true },
+        { "name": "n_cells",    "decode": "u8",     "hidden": true },
+
+        { "name": "cells",      "decode": "u16_be", "count": 16,
+          "scale": 0.001, "unit": "V", "qty": "voltage",
+          "label_fmt": "Cell %d" },
+
+        { "name": "n_temps",    "decode": "u8",     "hidden": true },
+
+        { "name": "temp_cell_1", "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Cell Temp 1" },
+        { "name": "temp_cell_2", "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Cell Temp 2" },
+        { "name": "temp_cell_3", "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Cell Temp 3" },
+        { "name": "temp_cell_4", "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Cell Temp 4" },
+        { "name": "temp_env",    "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Env Temp" },
+        { "name": "temp_power",  "decode": "u16_be",
+          "transform": "kelvin_tenth", "unit": "°C", "qty": "temperature",
+          "label": "Power Temp" },
+
+        { "name": "current",     "decode": "i16_be",
+          "scale": 0.01, "unit": "A", "qty": "current",
+          "label": "Pack Current" },
+        { "name": "voltage",     "decode": "u16_be",
+          "scale": 0.01, "unit": "V", "qty": "voltage",
+          "label": "Pack Voltage" },
+        { "name": "remain_ah",   "decode": "u16_be",
+          "scale": 0.01, "unit": "Ah", "qty": "capacity",
+          "label": "Remaining Capacity" },
+
+        { "name": "custom_cnt",  "decode": "u8",     "hidden": true },
+
+        { "name": "full_ah",     "decode": "u16_be",
+          "scale": 0.01, "unit": "Ah", "qty": "capacity",
+          "label": "Full Capacity" },
+        { "name": "soc",         "decode": "u16_be",
+          "scale": 0.1, "unit": "%", "qty": "charge",
+          "label": "SOC" },
+        { "name": "rated_ah",    "decode": "u16_be",
+          "scale": 0.01, "unit": "Ah", "qty": "capacity",
+          "label": "Rated Capacity" },
+        { "name": "cycles",      "decode": "u16_be",
+          "qty": "cycles",
+          "label": "Cycle Count" },
+        { "name": "soh",         "decode": "u16_be",
+          "scale": 0.1, "unit": "%", "qty": "health",
+          "label": "SOH" },
+        { "name": "port_v",      "decode": "u16_be",
+          "scale": 0.01, "unit": "V", "qty": "voltage",
+          "label": "Port Voltage" }
+      ]
+    }
+  ]
+}

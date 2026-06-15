@@ -1,0 +1,16 @@
+{
+  "slug": "growatt_spf6000es",
+  "interface": "uart",
+  "protocol": "modbus_rtu",
+  "category": "inverter",
+  "manufacturer": "Growatt",
+  "model": "SPF6000ES",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Growatt SPF6000ES off-grid inverter — Modbus RTU map for PV, battery, grid, load and protection flags.",
+  "tags": ["inverter", "off-grid", "modbus"],
+  "dependencies": []
+}

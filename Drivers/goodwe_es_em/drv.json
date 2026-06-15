@@ -1,0 +1,76 @@
+{
+  "read_timeout_ms": 1000,
+  "device_timeout_ms": 5000,
+  "device_pause_ms": 20,
+  "read_pause_ms": 20,
+  "stale_ms": 10000,
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+  "read_mode": "block",
+
+  "blocks": [
+    [3, 35100, 40],
+    [3, 35140, 40],
+    [3, 35180, 30]
+  ],
+  "regs": [
+    { "addr": 35100, "func": 3, "type": "u16", "name": "PV1 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 35101, "func": 3, "type": "u16", "name": "PV1 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 35103, "func": 3, "type": "u16", "name": "PV2 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 35104, "func": 3, "type": "u16", "name": "PV2 Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt" },
+    { "addr": 35107, "func": 3, "type": "u32", "name": "PV Total Power",
+      "qty": "power", "unit": "W", "group": "mppt", "summary": true },
+
+    { "addr": 35121, "func": 3, "type": "s32", "name": "Active Power",
+      "qty": "power", "unit": "W", "group": "ac", "summary": true },
+    { "addr": 35123, "func": 3, "type": "s32", "name": "Reactive Power",
+      "qty": "power", "unit": "Var", "group": "ac" },
+    { "addr": 35119, "func": 3, "type": "u16", "name": "Grid Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+
+    { "addr": 35138, "func": 3, "type": "u16", "name": "Working Mode",
+      "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Wait", "1": "Normal", "2": "Error", "3": "Check",
+        "4": "Permanent Fault", "5": "Update", "6": "Off-Grid"
+      } },
+
+    { "addr": 35140, "func": 3, "type": "u16", "name": "Inverter Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+
+    { "addr": 35180, "func": 3, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "battery" },
+    { "addr": 35181, "func": 3, "type": "s16", "name": "Battery Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 35182, "func": 3, "type": "s16", "name": "Battery Mode",
+      "qty": "none", "vclass": "state", "group": "battery",
+      "enum": { "0": "Standby", "1": "Discharge", "2": "Charge",
+                 "3": "To-Be-Discharge", "4": "To-Be-Charge" } },
+    { "addr": 35183, "func": 3, "type": "u16", "name": "Battery Power",
+      "qty": "power", "unit": "W", "group": "battery", "summary": true },
+    { "addr": 35184, "func": 3, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "group": "battery", "summary": true },
+    { "addr": 35185, "func": 3, "type": "u16", "name": "Battery SOH",
+      "qty": "percentage", "unit": "%", "group": "battery" },
+    { "addr": 35186, "func": 3, "type": "s16", "name": "Battery Temperature",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "battery" },
+
+    { "addr": 35191, "func": 3, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 35193, "func": 3, "type": "u16", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 35200, "func": 3, "type": "u32", "name": "Battery Discharge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" },
+    { "addr": 35202, "func": 3, "type": "u32", "name": "Battery Charge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy" }
+  ]
+}

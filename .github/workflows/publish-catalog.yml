@@ -1,0 +1,89 @@
+name: Publish catalogue
+
+# Source of truth → hexaos.io. On merge to main: validate every driver package,
+# (re)build catalog/index.json, then publish to the catalogue mirror over SSH/rsync
+# with per-version snapshots (a driver's previous version is preserved under
+# <slug>/<old-version>/ so users can still download older versions).
+# Publish target + credentials are supplied entirely via repo secrets (below).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Drivers/**"
+      - "tools/build_catalog.py"
+      - "tools/mirror_publish.sh"
+      - ".github/workflows/publish-catalog.yml"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # Map the gating secret to a job-level env: secrets can't be referenced
+    # directly in step `if:` conditions reliably, env can.
+    env:
+      CATALOG_SSH_HOST: ${{ secrets.CATALOG_SSH_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate + build catalogue index
+        run: python3 tools/build_catalog.py
+
+      - name: Upload catalogue as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog
+          path: |
+            catalog/index.json
+            Drivers/**
+
+      # --- Publish to the catalogue mirror (rsync to staging → snapshot+promote) -
+      # Required repo secrets:
+      #   CATALOG_SSH_HOST, CATALOG_SSH_USER, CATALOG_SSH_KEY  (ed25519 private key)
+      #   CATALOG_DEST      live mirror dir on the host
+      #   CATALOG_SSH_PORT  optional (default 22)
+      # Gated on the host secret so forks/PRs without secrets skip cleanly.
+      - name: Publish to catalogue mirror
+        if: ${{ env.CATALOG_SSH_HOST != '' }}
+        env:
+          SSH_KEY: ${{ secrets.CATALOG_SSH_KEY }}
+          HOST: ${{ secrets.CATALOG_SSH_HOST }}
+          SSH_USER: ${{ secrets.CATALOG_SSH_USER }}
+          PORT: ${{ secrets.CATALOG_SSH_PORT || '22' }}
+          LIVE: ${{ secrets.CATALOG_DEST }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          # Write the key, tolerating CRLF from Windows pastes; ensure trailing newline.
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Fail fast with a useful message if the key is malformed / passphrase-protected.
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1; then
+            echo "::error::CATALOG_SSH_KEY is not a valid unencrypted private key. Paste the FULL private key including the BEGIN/END lines, with NO passphrase (generate one with: ssh-keygen -t ed25519 -N \"\" -f key)."
+            exit 1
+          fi
+          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          REMOTE="$SSH_USER@$HOST"
+          SSH="ssh -p $PORT $REMOTE"
+          STAGING="${LIVE}.staging"
+
+          # Fresh staging on the host; ensure live exists.
+          $SSH "rm -rf '$STAGING' && mkdir -p '$STAGING/catalog' '$STAGING/Drivers' '$LIVE'"
+
+          # Push the freshly-built catalogue + packages into staging (staging may
+          # be wiped with --delete; LIVE is never --deleted so snapshots persist).
+          rsync -az --delete -e "ssh -p $PORT" catalog/  "$REMOTE:$STAGING/catalog/"
+          rsync -az --delete -e "ssh -p $PORT" Drivers/  "$REMOTE:$STAGING/Drivers/"
+          rsync -az          -e "ssh -p $PORT" tools/mirror_publish.sh "$REMOTE:$STAGING/mirror_publish.sh"
+
+          # Snapshot previous versions + promote staging → live, then clean up.
+          $SSH "bash '$STAGING/mirror_publish.sh' '$STAGING' '$LIVE' && rm -rf '$STAGING'"
+          echo "Published catalogue to $LIVE (with version snapshots)."
+
+      - name: Note when publish skipped
+        if: ${{ env.CATALOG_SSH_HOST == '' }}
+        run: echo "CATALOG_SSH_HOST not set — built + validated catalogue, skipped publish step."

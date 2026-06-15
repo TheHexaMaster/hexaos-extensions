@@ -1,0 +1,143 @@
+{
+  "device_id": { "reg": 254, "len": 2, "format": "uint16_be", "expected": 21577 },
+
+  "registers": [
+    { "name": "config",   "addr":   0, "len": 2, "format": "uint16_be" },
+    { "name": "ch1_sh",   "addr":   1, "len": 2, "format": "int16_be"  },
+    { "name": "ch1_bus",  "addr":   2, "len": 2, "format": "int16_be"  },
+    { "name": "ch2_sh",   "addr":   3, "len": 2, "format": "int16_be"  },
+    { "name": "ch2_bus",  "addr":   4, "len": 2, "format": "int16_be"  },
+    { "name": "ch3_sh",   "addr":   5, "len": 2, "format": "int16_be"  },
+    { "name": "ch3_bus",  "addr":   6, "len": 2, "format": "int16_be"  }
+  ],
+
+  "init_sequence": [
+    {
+      "register": "config",
+      "write_expr": "int(settings.ch1_en) << 14 | int(settings.ch2_en) << 13 | int(settings.ch3_en) << 12 | (int(settings.avg) & 7) << 9 | (int(settings.conv_us) & 7) << 6 | (int(settings.conv_us) & 7) << 3 | 0x07",
+      "comment": "Config register: channel enables, averaging, conversion time, continuous shunt+bus mode"
+    }
+  ],
+
+  "fields": [
+    {
+      "label": "CH1 Bus Voltage",
+      "qty": "voltage",
+      "unit": "V",
+      "precision": 3,
+      "register": "ch1_bus",
+      "transform": "raw / 8.0 * 0.008",
+      "min": 0.0,
+      "max": 26.0,
+      "condition": "settings.ch1_en"
+    },
+    {
+      "label": "CH1 Shunt Voltage",
+      "qty": "voltage",
+      "unit": "mV",
+      "precision": 2,
+      "register": "ch1_sh",
+      "transform": "raw / 8.0 * 0.04",
+      "min": -163.8,
+      "max": 163.8,
+      "condition": "settings.ch1_en"
+    },
+
+    {
+      "label": "CH2 Bus Voltage",
+      "qty": "voltage",
+      "unit": "V",
+      "precision": 3,
+      "register": "ch2_bus",
+      "transform": "raw / 8.0 * 0.008",
+      "min": 0.0,
+      "max": 26.0,
+      "condition": "settings.ch2_en"
+    },
+    {
+      "label": "CH2 Shunt Voltage",
+      "qty": "voltage",
+      "unit": "mV",
+      "precision": 2,
+      "register": "ch2_sh",
+      "transform": "raw / 8.0 * 0.04",
+      "min": -163.8,
+      "max": 163.8,
+      "condition": "settings.ch2_en"
+    },
+
+    {
+      "label": "CH3 Bus Voltage",
+      "qty": "voltage",
+      "unit": "V",
+      "precision": 3,
+      "register": "ch3_bus",
+      "transform": "raw / 8.0 * 0.008",
+      "min": 0.0,
+      "max": 26.0,
+      "condition": "settings.ch3_en"
+    },
+    {
+      "label": "CH3 Shunt Voltage",
+      "qty": "voltage",
+      "unit": "mV",
+      "precision": 2,
+      "register": "ch3_sh",
+      "transform": "raw / 8.0 * 0.04",
+      "min": -163.8,
+      "max": 163.8,
+      "condition": "settings.ch3_en"
+    }
+  ],
+
+  "computed": [
+    {
+      "label": "CH1 Current",
+      "qty": "current",
+      "unit": "A",
+      "precision": 4,
+      "expr": "ch1_shunt_voltage / settings.shunt_mohm",
+      "condition": "settings.ch1_en && settings.show_current"
+    },
+    {
+      "label": "CH2 Current",
+      "qty": "current",
+      "unit": "A",
+      "precision": 4,
+      "expr": "ch2_shunt_voltage / settings.shunt_mohm",
+      "condition": "settings.ch2_en && settings.show_current"
+    },
+    {
+      "label": "CH3 Current",
+      "qty": "current",
+      "unit": "A",
+      "precision": 4,
+      "expr": "ch3_shunt_voltage / settings.shunt_mohm",
+      "condition": "settings.ch3_en && settings.show_current"
+    },
+    {
+      "label": "CH1 Power",
+      "qty": "power",
+      "unit": "W",
+      "precision": 4,
+      "expr": "ch1_bus_voltage * ch1_current",
+      "condition": "settings.ch1_en && settings.show_current && settings.show_power"
+    },
+    {
+      "label": "CH2 Power",
+      "qty": "power",
+      "unit": "W",
+      "precision": 4,
+      "expr": "ch2_bus_voltage * ch2_current",
+      "condition": "settings.ch2_en && settings.show_current && settings.show_power"
+    },
+    {
+      "label": "CH3 Power",
+      "qty": "power",
+      "unit": "W",
+      "precision": 4,
+      "expr": "ch3_bus_voltage * ch3_current",
+      "condition": "settings.ch3_en && settings.show_current && settings.show_power"
+    }
+  ]
+}

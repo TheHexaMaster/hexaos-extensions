@@ -1,0 +1,16 @@
+{
+  "slug": "ti_hdc2010",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "sensor",
+  "manufacturer": "Texas Instruments",
+  "model": "HDC2010",
+  "version": "2.0.1",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Low-power digital humidity and temperature sensor.",
+  "tags": ["humidity", "temperature", "sensor"],
+  "dependencies": []
+}

@@ -1,0 +1,14 @@
+{
+  "address": { "default": "0x40" },
+  "poll_ms": { "default": 500 },
+  "settings": [
+    { "key": "shunt_mohm",   "label": "Shunt resistance", "type": "int",  "unit": "mΩ", "default": 100, "min": 1, "max": 10000 },
+    { "key": "avg",          "label": "Averaging",         "type": "enum", "default": 0, "options": ["1", "4", "16", "64", "128", "256", "512", "1024"] },
+    { "key": "conv_us",      "label": "Conversion time",   "type": "enum", "default": 4, "options": ["140", "204", "332", "588", "1100", "2116", "4156", "8244"] },
+    { "key": "ch1_en",       "label": "Channel 1",         "type": "bool", "default": true },
+    { "key": "ch2_en",       "label": "Channel 2",         "type": "bool", "default": true },
+    { "key": "ch3_en",       "label": "Channel 3",         "type": "bool", "default": true },
+    { "key": "show_current", "label": "Show current (A)",  "type": "bool", "default": true },
+    { "key": "show_power",   "label": "Show power (W)",    "type": "bool", "default": true }
+  ]
+}

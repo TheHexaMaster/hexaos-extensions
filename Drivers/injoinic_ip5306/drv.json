@@ -1,0 +1,152 @@
+{
+  "registers": [
+    { "name": "sys_ctl0",     "addr":   0, "len": 1, "format": "uint8" },
+    { "name": "sys_ctl1",     "addr":   1, "len": 1, "format": "uint8" },
+    { "name": "sys_ctl2",     "addr":   2, "len": 1, "format": "uint8" },
+    { "name": "charger_ctl0", "addr":  32, "len": 1, "format": "uint8" },
+    { "name": "charger_ctl1", "addr":  33, "len": 1, "format": "uint8" },
+    { "name": "charger_ctl2", "addr":  34, "len": 1, "format": "uint8" },
+    { "name": "chg_dig_ctl0", "addr":  36, "len": 1, "format": "uint8" },
+    { "name": "chg_state",    "addr": 112, "len": 1, "format": "uint8" },
+    { "name": "full_state",   "addr": 113, "len": 1, "format": "uint8" },
+    { "name": "ll_state",     "addr": 114, "len": 1, "format": "uint8" },
+    { "name": "btn_state",    "addr": 119, "len": 1, "format": "uint8" },
+    { "name": "batt_level",   "addr": 120, "len": 1, "format": "uint8" }
+  ],
+
+  "init_sequence": [
+    {
+      "register": "sys_ctl0",
+      "write_expr": "int(settings.btn_off_en) | int(settings.boost_out_en) << 1 | int(settings.auto_pwr_on) << 2 | int(settings.charger_en) << 4 | int(settings.boost_en) << 5",
+      "comment": "SYS_CTL0: button off, boost output, auto power on, charger, boost enable"
+    },
+    {
+      "register": "sys_ctl1",
+      "write_expr": "int(settings.low_pwr_off) | int(settings.boost_keep) << 2 | 1 << 5",
+      "comment": "SYS_CTL1: low power off, keep boost after VIN, short-press=boost"
+    },
+    {
+      "register": "sys_ctl2",
+      "write_expr": "(int(settings.shutdown_time) & 3) << 2",
+      "comment": "SYS_CTL2: light-load shutdown time"
+    },
+    {
+      "register": "charger_ctl0",
+      "write_expr": "int(settings.cutoff_voltage) & 3",
+      "comment": "Charger_CTL0 (0x20): charging full stop voltage"
+    },
+    {
+      "register": "charger_ctl1",
+      "write_expr": "(int(settings.end_current) & 3) << 6",
+      "comment": "Charger_CTL1 (0x21): end-of-charge current detection"
+    },
+    {
+      "register": "charger_ctl2",
+      "write_expr": "(int(settings.batt_voltage) & 3) << 2",
+      "comment": "Charger_CTL2 (0x22): battery voltage setting"
+    },
+    {
+      "register": "chg_dig_ctl0",
+      "write_expr": "int(settings.charge_current) & 31",
+      "comment": "CHG_DIG_CTL0 (0x24): charging current (value * 100 + 50 mA)"
+    }
+  ],
+
+  "fields": [
+    {
+      "label": "Battery Level",
+      "qty": "battery",
+      "unit": "%",
+      "precision": 0,
+      "register": "batt_level",
+      "transform": "if_else(raw < 128, 100, if_else(raw < 192, 75, if_else(raw < 224, 50, if_else(raw < 240, 25, 0))))",
+      "min": 0.0,
+      "max": 100.0
+    },
+    {
+      "label": "Charging",
+      "qty": "state",
+      "register": "chg_state",
+      "bit": 3,
+      "type": "bool"
+    },
+    {
+      "label": "Battery Full",
+      "qty": "state",
+      "register": "full_state",
+      "bit": 3,
+      "type": "bool"
+    },
+    {
+      "label": "Light Load",
+      "qty": "state",
+      "register": "ll_state",
+      "transform": "1 - ((int(raw) >> 2) & 1)",
+      "type": "bool"
+    },
+    {
+      "label": "Button Short",
+      "qty": "state",
+      "register": "btn_state",
+      "bit": 0,
+      "type": "bool"
+    },
+    {
+      "label": "Button Long",
+      "qty": "state",
+      "register": "btn_state",
+      "bit": 1,
+      "type": "bool"
+    },
+    {
+      "label": "Button Double",
+      "qty": "state",
+      "register": "btn_state",
+      "bit": 2,
+      "type": "bool"
+    },
+    {
+      "label": "Charger Active",
+      "qty": "state",
+      "register": "sys_ctl0",
+      "bit": 4,
+      "type": "bool"
+    },
+    {
+      "label": "Boost Active",
+      "qty": "state",
+      "register": "sys_ctl0",
+      "bit": 5,
+      "type": "bool"
+    },
+    {
+      "label": "5V Output",
+      "qty": "state",
+      "register": "sys_ctl0",
+      "bit": 1,
+      "type": "bool"
+    },
+    {
+      "label": "Charge Current",
+      "qty": "current",
+      "unit": "mA",
+      "precision": 0,
+      "register": "chg_dig_ctl0",
+      "transform": "(int(raw) & 31) * 100 + 50",
+      "min": 50.0,
+      "max": 3150.0
+    },
+    {
+      "label": "Battery Voltage Cfg",
+      "qty": "voltage",
+      "unit": "V",
+      "precision": 2,
+      "register": "charger_ctl2",
+      "transform": "4.2 + ((int(raw) >> 2) & 3) * 0.1",
+      "min": 4.2,
+      "max": 4.4
+    }
+  ],
+
+  "computed": []
+}

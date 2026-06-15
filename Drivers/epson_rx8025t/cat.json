@@ -1,0 +1,16 @@
+{
+  "slug": "epson_rx8025t",
+  "interface": "i2c",
+  "protocol": "rtc",
+  "category": "rtc",
+  "manufacturer": "Epson",
+  "model": "RX8025T",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Low-power I2C RTC with backup battery support. Time stored as packed BCD across registers 0x00..0x06.",
+  "tags": ["RTC", "Backup Battery", "BCD"],
+  "dependencies": []
+}

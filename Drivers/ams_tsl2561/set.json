@@ -1,0 +1,14 @@
+{
+  "address": { "default": "0x39" },
+  "poll_ms": { "default": 1000 },
+  "settings": [
+    { "key": "gain",        "label": "Gain",             "type": "enum", "default": 1,
+      "options": ["1× (bright / outdoor)", "16× (low light / indoor)"] },
+    { "key": "integration", "label": "Integration time", "type": "enum", "default": 2,
+      "options": ["13.7 ms (fast)", "101 ms", "402 ms (highest resolution)"] },
+    { "key": "formula_mode", "label": "Lux formula",     "type": "enum", "default": 1,
+      "options": ["SparkFun 4-segment (default)", "Adafruit 8-segment (higher accuracy)"] },
+    { "key": "show_raw",    "label": "Expose raw CH0/CH1 channel counts",
+      "type": "bool", "default": false }
+  ]
+}

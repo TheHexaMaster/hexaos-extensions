@@ -1,0 +1,16 @@
+{
+  "slug": "maxim_ds3232",
+  "interface": "i2c",
+  "protocol": "rtc",
+  "category": "rtc",
+  "manufacturer": "Maxim Integrated",
+  "model": "DS3232",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-15",
+  "updated": "2026-06-15",
+  "author": "Martin Macak",
+  "description": "Extremely accurate I2C RTC with TCXO and SRAM. Time stored as packed BCD across registers 0x00..0x06; OSF (Oscillator Stop Flag) at status register 0x0F bit7.",
+  "tags": ["RTC", "TCXO", "BCD"],
+  "dependencies": []
+}

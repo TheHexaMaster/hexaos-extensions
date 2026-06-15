@@ -1,0 +1,74 @@
+{
+  "registers": [
+    { "name": "pctl",       "addr":  0, "len": 1, "format": "uint8"     },
+    { "name": "rst",        "addr":  1, "len": 1, "format": "uint8"     },
+    { "name": "fpsc",       "addr":  2, "len": 1, "format": "uint8"     },
+    { "name": "intc",       "addr":  3, "len": 1, "format": "uint8"     },
+    { "name": "thermistor", "addr": 14, "len": 2, "format": "uint16_le" }
+  ],
+
+  "register_arrays": [
+    { "name_prefix": "pix", "count": 64, "addr_start": 128, "addr_step": 2, "len": 2, "format": "uint16_le", "index_base": 1 }
+  ],
+
+  "init_sequence": [
+    { "register": "pctl", "write": 0,                                "comment": "PCTL (0x00): normal mode (clear sleep / standby bits)" },
+    { "register": "rst",  "write": 63, "delay_ms": 10,               "comment": "RST (0x01): initial reset 0x3F — wait >= 10 ms before further config" },
+    { "register": "fpsc", "write_expr": "int(settings.frame_rate)", "delay_ms": 50, "comment": "FPSC (0x02): bit 0 = 0 → 10 fps, 1 → 1 fps. Wait one frame so first read is fresh." },
+    { "register": "intc", "write": 0,                                "comment": "INTC (0x03): disable interrupt output (we poll, no INT pin)" }
+  ],
+
+  "fields": [
+    {
+      "label": "Thermistor",
+      "qty": "temperature",
+      "unit": "°C",
+      "precision": 3,
+      "register": "thermistor",
+      "transform": "((raw & 2048) ? -(raw & 2047) : (raw & 2047)) * 0.0625",
+      "min": -20.0,
+      "max": 80.0,
+      "condition": "settings.show_thermistor"
+    }
+  ],
+
+  "field_templates": [
+    {
+      "repeat": 64,
+      "label": "Pixel {i+1}",
+      "qty": "temperature",
+      "unit": "°C",
+      "precision": 2,
+      "register": "pix{i+1}",
+      "transform": "(raw >= 2048 ? raw - 4096 : raw) * 0.25",
+      "min": -20.0,
+      "max": 100.0,
+      "condition": "settings.show_pixels"
+    }
+  ],
+
+  "computed": [],
+
+  "groups": [
+    {
+      "key": "thermal_grid",
+      "label": "Thermal grid",
+      "type": "matrix",
+      "rows": 8,
+      "cols": 8,
+      "members": [
+        "Pixel 1",  "Pixel 2",  "Pixel 3",  "Pixel 4",  "Pixel 5",  "Pixel 6",  "Pixel 7",  "Pixel 8",
+        "Pixel 9",  "Pixel 10", "Pixel 11", "Pixel 12", "Pixel 13", "Pixel 14", "Pixel 15", "Pixel 16",
+        "Pixel 17", "Pixel 18", "Pixel 19", "Pixel 20", "Pixel 21", "Pixel 22", "Pixel 23", "Pixel 24",
+        "Pixel 25", "Pixel 26", "Pixel 27", "Pixel 28", "Pixel 29", "Pixel 30", "Pixel 31", "Pixel 32",
+        "Pixel 33", "Pixel 34", "Pixel 35", "Pixel 36", "Pixel 37", "Pixel 38", "Pixel 39", "Pixel 40",
+        "Pixel 41", "Pixel 42", "Pixel 43", "Pixel 44", "Pixel 45", "Pixel 46", "Pixel 47", "Pixel 48",
+        "Pixel 49", "Pixel 50", "Pixel 51", "Pixel 52", "Pixel 53", "Pixel 54", "Pixel 55", "Pixel 56",
+        "Pixel 57", "Pixel 58", "Pixel 59", "Pixel 60", "Pixel 61", "Pixel 62", "Pixel 63", "Pixel 64"
+      ],
+      "scale": { "min": 18.0, "max": 35.0, "auto": true },
+      "unit": "°C",
+      "colormap": "heat"
+    }
+  ]
+}

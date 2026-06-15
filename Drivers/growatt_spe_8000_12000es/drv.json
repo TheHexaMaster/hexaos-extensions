@@ -1,0 +1,338 @@
+{
+  "read_timeout_ms": 1000,
+  "device_timeout_ms": 5000,
+  "device_pause_ms": 20,
+  "read_pause_ms": 20,
+  "stale_ms": 10000,
+  "retry": 1,
+  "offline_threshold": 3,
+  "backoff_max_ms": 30000,
+  "read_mode": "block",
+
+  "blocks": [
+    [4, 0, 34],
+    [4, 34, 20],
+    [4, 54, 38],
+    [3, 0, 20],
+    [3, 20, 20],
+    [3, 81, 27]
+  ],
+  "regs": [
+    {
+      "addr": 0, "func": 4, "type": "u16",
+      "name": "Inverter State", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Standby", "1": "PV & Grid Discharge", "2": "Battery Discharge",
+        "3": "FAULT", "4": "FLASH", "5": "PV Charge", "6": "AC Charge",
+        "7": "COM Charge", "8": "COM Charge & Bypass",
+        "9": "PV Charge & Bypass", "10": "AC Charge & Bypass",
+        "11": "Bypass Mode", "12": "PV Charge & Batt Dsc"
+      }
+    },
+    { "addr": 1, "func": 4, "type": "u16", "name": "PV1 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 2, "func": 4, "type": "u16", "name": "PV2 Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "mppt" },
+    { "addr": 3, "func": 4, "type": "u32", "name": "PV1 Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "mppt", "summary": true },
+    { "addr": 5, "func": 4, "type": "u32", "name": "PV2 Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "mppt", "summary": true },
+    { "addr": 7, "func": 4, "type": "u16", "name": "PV1 Buck Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt", "summary": true },
+    { "addr": 8, "func": 4, "type": "u16", "name": "PV2 Buck Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "mppt", "summary": true },
+
+    { "addr": 9, "func": 4, "type": "u32", "name": "AC Output Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "ac", "summary": true },
+    { "addr": 11, "func": 4, "type": "u32", "name": "AC Output Apparent",
+      "qty": "apparent power", "unit": "VA", "scale": 0.1, "group": "ac", "summary": true },
+    { "addr": 13, "func": 4, "type": "s32", "name": "AC Charger Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 15, "func": 4, "type": "u32", "name": "AC Charger Apparent",
+      "qty": "apparent power", "unit": "VA", "scale": 0.1, "group": "battery", "summary": true },
+
+    { "addr": 17, "func": 4, "type": "u16", "name": "Battery Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.01, "group": "battery" },
+    { "addr": 18, "func": 4, "type": "u16", "name": "Battery SOC",
+      "qty": "percentage", "unit": "%", "group": "battery", "summary": true },
+    { "addr": 19, "func": 4, "type": "u16", "name": "BUS Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "system" },
+
+    { "addr": 20, "func": 4, "type": "u16", "name": "AC Input Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 21, "func": 4, "type": "u16", "name": "AC Input Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+    { "addr": 22, "func": 4, "type": "u16", "name": "AC Output Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "ac" },
+    { "addr": 23, "func": 4, "type": "u16", "name": "AC Output Frequency",
+      "qty": "frequency", "unit": "Hz", "scale": 0.01, "group": "ac" },
+    { "addr": 24, "func": 4, "type": "s16", "name": "Output DC Voltage",
+      "qty": "voltage", "unit": "V", "scale": 0.1, "group": "system" },
+    { "addr": 25, "func": 4, "type": "u16", "name": "Inverter Temp",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+    { "addr": 26, "func": 4, "type": "u16", "name": "DC-DC Temp",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "system" },
+    { "addr": 27, "func": 4, "type": "u16", "name": "Inverter Load",
+      "qty": "percentage", "unit": "%", "scale": 0.1, "group": "system" },
+
+    { "addr": 32, "func": 4, "type": "u16", "name": "PV1 Buck Temp",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "mppt" },
+    { "addr": 33, "func": 4, "type": "u16", "name": "PV2 Buck Temp",
+      "qty": "temperature", "unit": "°C", "scale": 0.1, "group": "mppt" },
+
+    { "addr": 34, "func": 4, "type": "u16", "name": "AC Output Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "ac", "summary": true },
+    { "addr": 35, "func": 4, "type": "u16", "name": "AC Inverter Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "ac", "summary": true },
+    { "addr": 36, "func": 4, "type": "s32", "name": "AC Input Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "ac", "summary": true },
+    { "addr": 38, "func": 4, "type": "u32", "name": "AC Input Apparent",
+      "qty": "apparent power", "unit": "VA", "scale": 0.1, "group": "ac", "summary": true },
+
+    {
+      "addr": 40, "func": 4, "type": "u16",
+      "name": "Inverter Error", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "No Errors", "1": "01 - Cooling Fan Locked",
+        "2": "02 - Over Temperature", "3": "03 - Battery Voltage High",
+        "4": "04 - Battery Voltage Low", "5": "05 - Output Short Circuit",
+        "6": "06 - Output Voltage High", "7": "07 - Inverter Overloaded",
+        "8": "08 - Bus Voltage High", "9": "09 - Bus Start Fail",
+        "11": "11 - Main Relay Fail", "51": "51 - Over Current",
+        "52": "52 - Bus Voltage Low", "53": "53 - Inverter Softstart Fail",
+        "56": "56 - IGBT Over Current", "58": "58 - Output Voltage Low",
+        "60": "60 - Negative Power", "61": "61 - PV String Voltage High",
+        "62": "62 - SCI Com Error"
+      }
+    },
+    {
+      "addr": 41, "func": 4, "type": "u16",
+      "name": "Inverter Warning", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "No Warnings", "1": "Fan Lock", "2": "Over Charge",
+        "4": "Battery Voltage Low", "8": "Overload",
+        "16": "Op Power Derating", "32": "Solar Stop Bat Low",
+        "64": "Solar Stop PV High", "128": "Solar Stop Overload",
+        "256": "Grid Different", "512": "Grid Phase Error",
+        "1024": "Op Phase Loss", "2048": "Over Temperature",
+        "4096": "MPPT-Buck Current Over", "8192": "Battery Disconnected",
+        "16384": "BMS Com Error", "32768": "PV Power Insufficient"
+      }
+    },
+
+    { "addr": 48, "func": 4, "type": "u32", "name": "Solar Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 50, "func": 4, "type": "u32", "name": "Solar Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 56, "func": 4, "type": "u32", "name": "Batt AC Charge Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 58, "func": 4, "type": "u32", "name": "Batt AC Charge Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 60, "func": 4, "type": "u32", "name": "Batt Out Energy Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 62, "func": 4, "type": "u32", "name": "Batt Out Energy Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 64, "func": 4, "type": "u32", "name": "AC Bypass Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 66, "func": 4, "type": "u32", "name": "AC Bypass Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    { "addr": 68, "func": 4, "type": "u16", "name": "AC Charger Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 77, "func": 4, "type": "s32", "name": "Battery Power",
+      "qty": "power", "unit": "W", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 81, "func": 4, "type": "u16", "name": "Fan Speed MPPT",
+      "qty": "percentage", "unit": "%", "group": "system" },
+    { "addr": 82, "func": 4, "type": "u16", "name": "Fan Speed System",
+      "qty": "percentage", "unit": "%", "group": "system" },
+    { "addr": 83, "func": 4, "type": "u16", "name": "Battery Charge Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 84, "func": 4, "type": "u16", "name": "Battery Discharge Current",
+      "qty": "current", "unit": "A", "scale": 0.1, "group": "battery", "summary": true },
+    { "addr": 85, "func": 4, "type": "u32", "name": "AC Output Today",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+    { "addr": 87, "func": 4, "type": "u32", "name": "AC Output Total",
+      "qty": "energy", "unit": "kWh", "scale": 0.1,
+      "vclass": "total_increasing", "group": "energy", "summary": true },
+
+    {
+      "addr": 91, "func": 4, "type": "u16",
+      "name": "Parallel Status", "qty": "none", "vclass": "state", "group": "system",
+      "enum": {
+        "0": "Single", "1": "Master 3P1", "2": "Slave Single PAL",
+        "3": "Slave 3P1", "4": "Slave 3P2", "5": "Slave 3P3",
+        "6": "Slave 2P1", "7": "Slave 2P2 120°", "8": "Slave 2P2 180°"
+      }
+    },
+
+    {
+      "addr": 0, "func": 3, "type": "u16",
+      "name": "AC Inverter ON / OFF", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 0, "off": 256,
+      "group": "setting"
+    },
+    {
+      "addr": 1, "func": 3, "type": "u16",
+      "name": "Inverter Output Priority", "qty": "none", "vclass": "state",
+      "rw": true, "group": "setting",
+      "enum": { "0": "SBU", "1": "SOL", "2": "UTI", "3": "SUB" }
+    },
+    {
+      "addr": 2, "func": 3, "type": "u16",
+      "name": "Inverter Charge Priority", "qty": "none", "vclass": "state",
+      "rw": true, "group": "setting",
+      "enum": { "0": "Solar First", "1": "Solar & Utility", "2": "Solar Only" }
+    },
+    {
+      "addr": 8, "func": 3, "type": "u16",
+      "name": "AC Input Mode", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": { "0": "APL", "1": "UPS", "2": "GEN" }
+    },
+    {
+      "addr": 18, "func": 3, "type": "u16",
+      "name": "AC Output Voltage Config", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": { "0": "208 V", "1": "230 V", "2": "240 V", "3": "220 V", "4": "100 V", "5": "110 V", "6": "120 V" }
+    },
+    {
+      "addr": 19, "func": 3, "type": "u16",
+      "name": "AC Output Frequency Config", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": { "0": "50 Hz", "1": "60 Hz" }
+    },
+    {
+      "addr": 20, "func": 3, "type": "u16",
+      "name": "Overload Restart", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": { "0": "DISABLED", "1": "ENABLED", "2": "Switch to UTI" }
+    },
+    {
+      "addr": 21, "func": 3, "type": "u16",
+      "name": "Overtemperature Restart", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "config"
+    },
+    {
+      "addr": 22, "func": 3, "type": "u16",
+      "name": "Buzzer Alarm", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "setting"
+    },
+    {
+      "addr": 32, "func": 3, "type": "u16",
+      "name": "Reset Personal Data", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0,
+      "group": "config",
+      "enum": { "0": "INACTIVE", "1": "RESET" }
+    },
+    {
+      "addr": 33, "func": 3, "type": "u16",
+      "name": "Reset to Factory", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0,
+      "group": "config",
+      "enum": { "0": "INACTIVE", "1": "RESET" }
+    },
+    {
+      "addr": 34, "func": 3, "type": "u16",
+      "name": "Max Charge Current", "qty": "current", "unit": "A",
+      "rw": true, "min": 0, "max": 800, "group": "setting"
+    },
+    {
+      "addr": 35, "func": 3, "type": "u16",
+      "name": "Bulk Charge Voltage", "qty": "voltage", "unit": "V",
+      "scale": 0.1, "rw": true, "min": 48.0, "max": 58.4,
+      "precision": 1, "group": "config"
+    },
+    {
+      "addr": 36, "func": 3, "type": "u16",
+      "name": "Float Charge Voltage", "qty": "voltage", "unit": "V",
+      "scale": 0.1, "rw": true, "min": 48.0, "max": 58.4,
+      "precision": 1, "group": "config"
+    },
+    {
+      "addr": 37, "func": 3, "type": "u16",
+      "name": "SOC to Utility", "qty": "percentage", "unit": "%",
+      "scale": 0.1, "rw": true, "w": "slider", "min": 10, "max": 100, "group": "setting"
+    },
+    {
+      "addr": 38, "func": 3, "type": "u16",
+      "name": "AC Charger Current SET", "qty": "current", "unit": "A",
+      "rw": true, "min": 0, "max": 120, "group": "setting"
+    },
+    {
+      "addr": 39, "func": 3, "type": "u16",
+      "name": "Battery Type", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": {
+        "0": "AGM (NO BMS)", "1": "Lead Acid (NO BMS)",
+        "2": "User Defined VAR.1", "3": "Lithium (BMS)", "4": "User Defined VAR.2"
+      }
+    },
+    {
+      "addr": 82, "func": 3, "type": "u16",
+      "name": "SOC to Cutoff", "qty": "percentage", "unit": "%",
+      "scale": 0.1, "rw": true, "w": "slider", "min": 5, "max": 50, "group": "setting"
+    },
+    {
+      "addr": 83, "func": 3, "type": "u16",
+      "name": "GEN MAX Current", "qty": "current", "unit": "A",
+      "scale": 0.1, "rw": true, "min": 0, "max": 400, "group": "setting"
+    },
+    {
+      "addr": 95, "func": 3, "type": "u16",
+      "name": "SOC to Recovery", "qty": "percentage", "unit": "%",
+      "scale": 0.1, "rw": true, "w": "slider", "min": 15, "max": 100, "group": "setting"
+    },
+    {
+      "addr": 96, "func": 3, "type": "u16",
+      "name": "Overload Bypass", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "config"
+    },
+    {
+      "addr": 97, "func": 3, "type": "u16",
+      "name": "Power Saving Mode", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "config"
+    },
+    {
+      "addr": 99, "func": 3, "type": "u16",
+      "name": "Reset Energy Today", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0,
+      "group": "config",
+      "enum": { "0": "INACTIVE", "1": "RESET" }
+    },
+    {
+      "addr": 100, "func": 3, "type": "u16",
+      "name": "Reset Energy Total", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0,
+      "group": "config",
+      "enum": { "0": "INACTIVE", "1": "RESET" }
+    },
+    {
+      "addr": 104, "func": 3, "type": "u16",
+      "name": "Display Backlight", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "setting"
+    },
+    {
+      "addr": 106, "func": 3, "type": "u16",
+      "name": "Battery Protocol", "qty": "none", "vclass": "state",
+      "rw": true, "group": "config",
+      "enum": {
+        "0": "BMS Disabled", "1": "Growatt RS485", "2": "Pylontech RS485",
+        "4": "Extended RS485", "51": "Growatt CAN", "52": "Pylontech CAN"
+      }
+    },
+    {
+      "addr": 107, "func": 3, "type": "u16",
+      "name": "System Alarm", "qty": "none", "vclass": "state",
+      "rw": true, "w": "toggle", "on": 1, "off": 0, "group": "setting"
+    }
+  ]
+}

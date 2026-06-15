@@ -1,0 +1,43 @@
+{
+  "device_id": { "reg": 255, "len": 1, "expected": 7 },
+
+  "registers": [
+    { "name": "temp_raw",    "addr":   0, "len": 2, "format": "uint16_le" },
+    { "name": "hum_raw",     "addr":   2, "len": 2, "format": "uint16_le" },
+    { "name": "drdy_cfg",    "addr":  14, "len": 1, "format": "uint8"      },
+    { "name": "meas_cfg",    "addr":  15, "len": 1, "format": "uint8"      }
+  ],
+
+  "init_sequence": [
+    { "register": "meas_cfg", "write_expr": "int(settings.meas_mode) << 1", "comment": "Measurement config — mode bits (T+H/T/H)" },
+    { "register": "drdy_cfg", "write": 80, "comment": "Auto measurement 1 Hz (AMM=101 in bits 6:4 = 0x50)" },
+    { "register": "meas_cfg", "write_expr": "int(settings.meas_mode) << 1 | 1", "delay_ms": 150, "comment": "Trigger first measurement (MEAS_TRIG=1), AMM continues after" }
+  ],
+
+  "fields": [
+    {
+      "label": "Temperature",
+      "qty": "temperature",
+      "unit": "°C",
+      "precision": 2,
+      "register": "temp_raw",
+      "transform": "raw / 65536.0 * 165.0 - 40.0",
+      "min": -40.0,
+      "max": 125.0,
+      "condition": "settings.meas_mode != 2"
+    },
+    {
+      "label": "Humidity",
+      "qty": "humidity",
+      "unit": "%",
+      "precision": 1,
+      "register": "hum_raw",
+      "transform": "raw / 65536.0 * 100.0",
+      "min": 0.0,
+      "max": 100.0,
+      "condition": "settings.meas_mode != 1"
+    }
+  ],
+
+  "computed": []
+}
