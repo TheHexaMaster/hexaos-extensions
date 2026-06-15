@@ -1,8 +1,8 @@
 {
   "catalog_version": 1,
-  "generated": "2026-06-15T16:59:27Z",
+  "generated": "2026-06-15T17:19:08Z",
   "source": "https://github.com/TheHexaMaster/HexaOS-Extensions",
-  "count": 23,
+  "count": 24,
   "drivers": [
     {
       "slug": "ams_tsl2561",
@@ -150,6 +150,36 @@
         "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/readme.md",
         "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/epson_rx8025t/changelog.md",
         "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/epson_rx8025t"
+      }
+    },
+    {
+      "slug": "fitipower_jd9165a",
+      "interface": "display",
+      "protocol": "dsi",
+      "category": "display",
+      "manufacturer": "Fitipower",
+      "model": "JD9165A",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-15",
+      "updated": "2026-06-15",
+      "author": "Martin Macak",
+      "description": "Fitipower JD9165A MIPI-DSI TFT panel controller, 1024x600, 2-lane DSI. Carries the panel init sequence, DSI timing, reset timing, backlight and LVGL memory profile.",
+      "tags": [
+        "display",
+        "dsi",
+        "1024x600",
+        "tft"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/fitipower_jd9165a",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/fitipower_jd9165a/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/fitipower_jd9165a/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/fitipower_jd9165a/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/fitipower_jd9165a/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/fitipower_jd9165a/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/fitipower_jd9165a"
       }
     },
     {

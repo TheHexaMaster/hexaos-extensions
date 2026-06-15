@@ -1,0 +1,6 @@
+{
+  "settings": [
+    { "key": "fb_mode", "label": "Framebuffer mode", "type": "enum", "default": "double", "options": ["single", "double", "partial"] },
+    { "key": "partial_lines", "label": "Partial-mode lines (0 = full screen)", "type": "int", "default": 0, "min": 0, "max": 600 }
+  ]
+}
