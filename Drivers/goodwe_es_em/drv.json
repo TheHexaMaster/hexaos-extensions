@@ -1,9 +1,4 @@
 {
-  "read_timeout_ms": 1000,
-  "device_timeout_ms": 5000,
-  "device_pause_ms": 20,
-  "read_pause_ms": 20,
-  "stale_ms": 10000,
   "retry": 1,
   "offline_threshold": 3,
   "backoff_max_ms": 30000,

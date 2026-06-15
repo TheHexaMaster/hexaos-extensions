@@ -5,7 +5,7 @@
   "category": "inverter",
   "manufacturer": "Growatt",
   "model": "SPE 8000-12000ES (off-grid storage hybrid)",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "hexaos_compat": "0.7.0",
   "released": "2026-06-15",
   "updated": "2026-06-15",
