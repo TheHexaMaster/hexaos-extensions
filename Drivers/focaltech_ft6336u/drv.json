@@ -1,0 +1,51 @@
+{
+  "registers": [
+    {
+      "name": "td_status",
+      "addr": 2,
+      "addr_bytes": 1,
+      "len": 1,
+      "format": "uint8",
+      "comment": "0x02 TD_STATUS — bits[3:0] = number of active touch points (0..2); upper bits reserved."
+    },
+    {
+      "name": "touch1",
+      "addr": 3,
+      "addr_bytes": 1,
+      "len": 4,
+      "format": "block",
+      "comment": "0x03..0x06 first touch point: [XH, XL, YH, YL]. XH bits[3:0]=X[11:8] (bits[7:6]=event flag); XL=X[7:0]; YH bits[3:0]=Y[11:8] (bits[7:4]=touch id); YL=Y[7:0]. 12-bit, big-endian."
+    }
+  ],
+
+  "fields": [
+    {
+      "label":    "pressed",
+      "register": "td_status",
+      "mask":     15,
+      "shift":    0,
+      "type":     "bool",
+      "comment":  "TD_STATUS low nibble = touch count; 0 = released, 1..2 = pressed. The engine's bool conversion is value != 0."
+    },
+    {
+      "label":      "x",
+      "register":   "touch1",
+      "byte_start": 0,
+      "byte_len":   2,
+      "byte_order": "be",
+      "mask":       4095,
+      "type":       "int",
+      "comment":    "0x03..0x04 assembled big-endian, masked to 12 bits (drops the event-flag nibble). Valid only when pressed; sticky between touches."
+    },
+    {
+      "label":      "y",
+      "register":   "touch1",
+      "byte_start": 2,
+      "byte_len":   2,
+      "byte_order": "be",
+      "mask":       4095,
+      "type":       "int",
+      "comment":    "0x05..0x06 assembled big-endian, masked to 12 bits (drops the touch-id nibble). Valid only when pressed; sticky between touches."
+    }
+  ]
+}

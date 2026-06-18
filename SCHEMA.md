@@ -82,6 +82,12 @@ defaults at load.
 - `settings[]` entry types (unchanged from the engine): `bool`, `float`,
   `int`/`enum` (int with `options` UI metadata), `bitmask8`/`bitmask16`. Keep
   `label`, `default`, `min`/`max`, `options`/`states`, `label_0`/`label_1`.
+- `gpio` — a host GPIO number (`default: -1` = none). The WebUI renders it as a
+  claim-aware free-pin picker (not a raw number), and the firmware claims the
+  pin in the shared GPIO owner map (conflict-checked, shown in the pinmap) like
+  a bus/interface pin. The reserved key `int_gpio` uses this for a device's
+  interrupt line (interrupt-gated polling); the value is stored in the device's
+  `custom` block and surfaced on `HxHwDevice.int_gpio`.
 
 ### I2C RTC (`protocol: "rtc"`)
 ```json

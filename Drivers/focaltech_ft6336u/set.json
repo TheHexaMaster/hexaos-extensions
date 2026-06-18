@@ -1,0 +1,33 @@
+{
+  "address": { "default": "0x38" },
+  "poll_ms": { "default": 20 },
+  "settings": [
+    {
+      "key":     "int_gpio",
+      "label":   "Interrupt GPIO (-1 = polling only)",
+      "type":    "gpio",
+      "default": -1,
+      "comment": "Reserved key. When >= 0 the firmware claims this pin in the shared GPIO owner map (conflict = rejected at commit, shows in the pinmap) and stops continuously polling the chip: at each poll tick it checks this INT line (active-low) and only reads touch data when a touch is signalled, publishing a released state otherwise. -1 = plain periodic polling. Reaction latency = one poll_ms tick."
+    },
+    {
+      "key":     "x_max",
+      "label":   "Max X (panel units)",
+      "type":    "int",
+      "default": 480,
+      "comment": "Used by display_handler to scale/clamp the raw x reading into LVGL display coordinates. Match the paired panel."
+    },
+    {
+      "key":     "y_max",
+      "label":   "Max Y (panel units)",
+      "type":    "int",
+      "default": 320
+    },
+    {
+      "key":     "swap_xy",
+      "label":   "Swap X / Y",
+      "type":    "bool",
+      "default": false,
+      "comment": "Some panels mount the touch sensor rotated; display_handler swaps raw x / raw y before passing to LVGL when true."
+    }
+  ]
+}

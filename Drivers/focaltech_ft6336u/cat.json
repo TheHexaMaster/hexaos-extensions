@@ -1,0 +1,16 @@
+{
+  "slug": "focaltech_ft6336u",
+  "interface": "i2c",
+  "protocol": "none",
+  "category": "touch",
+  "manufacturer": "FocalTech",
+  "model": "FT6336U",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-18",
+  "updated": "2026-06-18",
+  "author": "Martin Macak",
+  "description": "FocalTech FT6336U capacitive touch controller (I2C, up to 2 touch points; this template publishes the first point: x, y, pressed). An optional INT GPIO setting switches the driver from periodic polling to interrupt-gated reads.",
+  "tags": ["Touch", "Capacitive", "I2C", "TFT"],
+  "dependencies": []
+}
