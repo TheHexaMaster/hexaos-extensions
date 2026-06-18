@@ -17,12 +17,16 @@ SCHEMA.md              authoritative package + cat/set/drv split spec
 ```
 
 ## How it flows
-1. Contribute/update a driver via PR (community welcome; most drivers are
-   authored by the HexaOS AI). CI validates the package (the 5 mandatory files,
-   `cat.json` schema, semver, unique slug, `hexaos_compat`).
-2. On merge to `main`, a GitHub Action publishes the package to the hexaos.io
-   **online catalogue** (Extensions → Drivers) — same auto-deploy pattern as the
-   portal. Users browse + install drivers from there into their device.
+1. Contribute/update a driver via PR or commit (community welcome; most drivers
+   are authored by the HexaOS AI). Bump `cat.json.version` and add a
+   `changelog.md` entry on every change (see Versioning in `SCHEMA.md`).
+2. This repo is **pure data — it has no CI of its own.** The **hexaos-portal**
+   repo includes it as a git submodule, generates the catalogue index from the
+   `Drivers/` packages at build time (validating the 5 mandatory files, the
+   `cat.json` schema, semver, unique slug and `hexaos_compat`), and serves the
+   Extensions → Drivers catalogue on hexaos.io. A driver change goes live by
+   bumping the submodule in the portal and deploying it — there is no separate
+   publish pipeline here.
 
 ## Rules
 - `slug` = `manufacturer_model` (lowercase snake_case), unique, = directory name.
