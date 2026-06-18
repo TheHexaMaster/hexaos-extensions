@@ -1,0 +1,9 @@
+{
+  "settings": [
+    { "key": "framebuffer", "label": "Framebuffer mode", "type": "enum", "default": "partial", "options": ["single", "double", "partial"] },
+    { "key": "partial_lines", "label": "Partial-mode lines (0 = full screen)", "type": "int", "default": 30, "min": 0, "max": 320 },
+    { "key": "partial_buffering", "label": "Partial buffering", "type": "enum", "default": "single", "options": ["single", "double"] },
+    { "key": "heap_kb", "label": "LVGL heap soft-cap (KiB)", "type": "int", "default": 64, "min": 32, "max": 4096 },
+    { "key": "rotation_deg", "label": "Rotation", "type": "enum", "default": 0, "options": [0, 90, 180, 270] }
+  ]
+}

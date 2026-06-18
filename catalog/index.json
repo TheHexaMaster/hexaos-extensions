@@ -1,8 +1,8 @@
 {
   "catalog_version": 1,
-  "generated": "2026-06-15T17:19:08Z",
+  "generated": "2026-06-18T04:35:25Z",
   "source": "https://github.com/TheHexaMaster/HexaOS-Extensions",
-  "count": 24,
+  "count": 25,
   "drivers": [
     {
       "slug": "ams_tsl2561",
@@ -159,12 +159,12 @@
       "category": "display",
       "manufacturer": "Fitipower",
       "model": "JD9165A",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "hexaos_compat": "0.7.0",
       "released": "2026-06-15",
-      "updated": "2026-06-15",
+      "updated": "2026-06-18",
       "author": "Martin Macak",
-      "description": "Fitipower JD9165A MIPI-DSI TFT panel controller, 1024x600, 2-lane DSI. Carries the panel init sequence, DSI timing, reset timing, backlight and LVGL memory profile.",
+      "description": "Fitipower JD9165A MIPI-DSI TFT panel controller, 1024x600, 2-lane DSI. Carries the panel init sequence, DSI/reset timing, backlight and LVGL pixel format; framebuffer strategy, partial lines, heap, rotation and DSI PHY are interface settings.",
       "tags": [
         "display",
         "dsi",
@@ -594,6 +594,37 @@
         "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/readme.md",
         "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/solis_s5_s6_hybrid/changelog.md",
         "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/solis_s5_s6_hybrid"
+      }
+    },
+    {
+      "slug": "st7796u_i8080",
+      "interface": "display",
+      "protocol": "i8080",
+      "category": "display",
+      "manufacturer": "Sitronix",
+      "model": "ST7796U",
+      "version": "1.0.0",
+      "hexaos_compat": "0.7.0",
+      "released": "2026-06-18",
+      "updated": "2026-06-18",
+      "author": "Martin Macak",
+      "description": "Sitronix ST7796U TFT controller, 480x320, 8/16-bit Intel 8080 (i80) parallel MCU interface. Carries the panel init sequence, window/rotation/invert command set, backlight and LVGL memory profile. Data pins, bus width and timing are board-defined in hardware.json.",
+      "tags": [
+        "display",
+        "i8080",
+        "parallel",
+        "480x320",
+        "tft"
+      ],
+      "dependencies": [],
+      "paths": {
+        "dir": "Drivers/st7796u_i8080",
+        "cat": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/st7796u_i8080/cat.json",
+        "set": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/st7796u_i8080/set.json",
+        "drv": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/st7796u_i8080/drv.json",
+        "readme": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/st7796u_i8080/readme.md",
+        "changelog": "https://raw.githubusercontent.com/TheHexaMaster/HexaOS-Extensions/main/Drivers/st7796u_i8080/changelog.md",
+        "browse": "https://github.com/TheHexaMaster/HexaOS-Extensions/tree/main/Drivers/st7796u_i8080"
       }
     },
     {

@@ -1,0 +1,65 @@
+{
+  "panel": {
+    "width_px":    480,
+    "height_px":   320,
+    "bpp":         16,
+    "color_order": "bgr"
+  },
+
+  "i80_io": {
+    "bus_width":        8,
+    "pclk_hz":          20000000,
+    "lcd_cmd_bits":     8,
+    "lcd_param_bits":   8,
+    "dc_data_level":    1,
+    "swap_color_bytes": true
+  },
+
+  "reset_timing": {
+    "pre_low_ms":   10,
+    "pulse_ms":     10,
+    "post_high_ms": 120
+  },
+
+  "init_sequence": [
+    { "cmd": "0x01", "data": [],       "delay_ms": 150 },
+    { "cmd": "0x11", "data": [],       "delay_ms": 150 },
+    { "cmd": "0x3A", "data": ["0x55"], "delay_ms": 150 },
+    { "cmd": "0x36", "data": ["0x00"], "delay_ms": 150 },
+    { "cmd": "0x21", "data": [],       "delay_ms": 150 },
+    { "cmd": "0x13", "data": [],       "delay_ms": 150 },
+    { "cmd": "0x29", "data": [],       "delay_ms": 150 }
+  ],
+
+  "panel_cmds": {
+    "caset":      "0x2A",
+    "raset":      "0x2B",
+    "ramwr":      "0x2C",
+    "madctl":     "0x36",
+    "invert_off": "0x20",
+    "invert_on":  "0x21",
+    "disp_off":   "0x28",
+    "disp_on":    "0x29"
+  },
+
+  "rotation": [
+    { "madctl": "0x28", "x_offset": 0, "y_offset": 0 },
+    { "madctl": "0x48", "x_offset": 0, "y_offset": 0 },
+    { "madctl": "0x88", "x_offset": 0, "y_offset": 0 },
+    { "madctl": "0xE8", "x_offset": 0, "y_offset": 0 }
+  ],
+
+  "backlight": {
+    "kind":         "pwm",
+    "ledc_channel": 0,
+    "ledc_timer":   1,
+    "freq_hz":      20000,
+    "duty_bits":    10,
+    "active_high":  true,
+    "default_pct":  80
+  },
+
+  "lvgl": {
+    "fb_color_mode": "rgb565"
+  }
+}

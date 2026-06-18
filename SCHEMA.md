@@ -42,7 +42,8 @@ per-instance knobs → `set.json`, everything else (the body) → `drv.json`.
 - `slug` first, = dir name, = `manufacturer_model` lowercase snake_case.
 - `interface`: `i2c` | `uart` | `display`.
 - `protocol`: `none` | `rtc` | `modbus_rtu` | `pace` | `dsi` | `rgb` | `dspi` |
-  `qspi`. **`protocol: "rtc"` REPLACES the old `special_usecase: "RTC"`.**
+  `qspi` | `i8080`. **`protocol: "rtc"` REPLACES the old `special_usecase: "RTC"`.**
+  `i8080` is the Intel 8080 parallel MCU display interface (e.g. ST7796U).
 - `category`: free string for grouping/search (sensor, expander, relay, touch,
   rtc, inverter, bms, display …).
 - `version`: driver **semver** MAJOR.MINOR.PATCH (bump `version` here on any

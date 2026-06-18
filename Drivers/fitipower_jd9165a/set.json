@@ -1,6 +1,10 @@
 {
   "settings": [
-    { "key": "fb_mode", "label": "Framebuffer mode", "type": "enum", "default": "double", "options": ["single", "double", "partial"] },
-    { "key": "partial_lines", "label": "Partial-mode lines (0 = full screen)", "type": "int", "default": 0, "min": 0, "max": 600 }
+    { "key": "framebuffer", "label": "Framebuffer mode", "type": "enum", "default": "double", "options": ["single", "double", "partial"] },
+    { "key": "partial_lines", "label": "Partial-mode lines (0 = full screen)", "type": "int", "default": 0, "min": 0, "max": 600 },
+    { "key": "heap_kb", "label": "LVGL heap soft-cap (KiB)", "type": "int", "default": 384, "min": 32, "max": 4096 },
+    { "key": "rotation_deg", "label": "Rotation", "type": "enum", "default": 0, "options": [0, 90, 180, 270] },
+    { "key": "dsi_phy_ldo_channel", "label": "DSI PHY LDO channel", "type": "int", "default": 3, "min": 1, "max": 4 },
+    { "key": "dsi_phy_voltage_mv", "label": "DSI PHY voltage (mV)", "type": "int", "default": 2500, "min": 1000, "max": 3300 }
   ]
 }

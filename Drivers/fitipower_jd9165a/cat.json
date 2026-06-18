@@ -6,12 +6,12 @@
   "manufacturer": "Fitipower",
   "model": "JD9165A",
   "variant": "1024x600",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "hexaos_compat": "0.7.0",
   "released": "2026-06-15",
-  "updated": "2026-06-15",
+  "updated": "2026-06-18",
   "author": "Martin Macak",
-  "description": "Fitipower JD9165A MIPI-DSI TFT panel controller, 1024x600, 2-lane DSI. Carries the panel init sequence, DSI timing, reset timing, backlight and LVGL memory profile.",
+  "description": "Fitipower JD9165A MIPI-DSI TFT panel controller, 1024x600, 2-lane DSI. Carries the panel init sequence, DSI/reset timing, backlight and LVGL pixel format; framebuffer strategy, partial lines, heap, rotation and DSI PHY are interface settings.",
   "tags": ["display", "dsi", "1024x600", "tft"],
   "dependencies": []
 }

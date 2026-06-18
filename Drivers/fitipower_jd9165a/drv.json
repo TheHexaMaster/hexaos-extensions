@@ -101,9 +101,6 @@
   },
 
   "lvgl": {
-    "heap_kb":         384,
-    "framebuffer":     "double",
-    "fb_color_mode":   "rgb565",
-    "partial_lines":   0
+    "fb_color_mode": "rgb565"
   }
 }

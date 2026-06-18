@@ -1,0 +1,17 @@
+{
+  "slug": "st7796u_i8080",
+  "interface": "display",
+  "protocol": "i8080",
+  "category": "display",
+  "manufacturer": "Sitronix",
+  "model": "ST7796U",
+  "variant": "480x320",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-18",
+  "updated": "2026-06-18",
+  "author": "Martin Macak",
+  "description": "Sitronix ST7796U TFT controller, 480x320, 8/16-bit Intel 8080 (i80) parallel MCU interface. Carries the panel init sequence, window/rotation/invert command set, backlight and LVGL memory profile. Data pins, bus width and timing are board-defined in hardware.json.",
+  "tags": ["display", "i8080", "parallel", "480x320", "tft"],
+  "dependencies": []
+}
