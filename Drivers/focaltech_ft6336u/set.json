@@ -1,33 +1,59 @@
 {
   "address": { "default": "0x38" },
-  "poll_ms": { "default": 20 },
+  "poll_ms": { "default": 15 },
   "settings": [
     {
       "key":     "int_gpio",
-      "label":   "Interrupt GPIO (-1 = polling only)",
+      "label":   "Interrupt GPIO (none = polling)",
       "type":    "gpio",
       "default": -1,
-      "comment": "Reserved key. When >= 0 the firmware claims this pin in the shared GPIO owner map (conflict = rejected at commit, shows in the pinmap) and stops continuously polling the chip: at each poll tick it checks this INT line (active-low) and only reads touch data when a touch is signalled, publishing a released state otherwise. -1 = plain periodic polling. Reaction latency = one poll_ms tick."
+      "comment": "Pin set -> interrupt mode: the driver writes G_MODE=trigger (0xA4=1) and the firmware reads the chip only when the INT line signals a touch (no I2C while idle). No pin -> polling mode (G_MODE=0, periodic read). The pin is claimed in the shared GPIO owner map (conflict-checked, shown in the pinmap)."
     },
     {
-      "key":     "x_max",
-      "label":   "Max X (panel units)",
-      "type":    "int",
-      "default": 480,
-      "comment": "Used by display_handler to scale/clamp the raw x reading into LVGL display coordinates. Match the paired panel."
+      "key":     "reset_gpio",
+      "label":   "Reset GPIO",
+      "type":    "gpio",
+      "default": -1,
+      "comment": "Pin set -> the firmware pulses it at startup per the driver's reset_timing (active-low). No pin -> not pulsed (e.g. the reset line is shared with the panel and cycled by the display init). Claimed in the shared GPIO owner map."
     },
     {
-      "key":     "y_max",
-      "label":   "Max Y (panel units)",
+      "key":     "touch_threshold",
+      "label":   "Touch threshold",
       "type":    "int",
-      "default": 320
+      "default": 22,
+      "min":     0,
+      "max":     255,
+      "comment": "Written to TH_GROUP (0x80) at init. Touch-detection threshold; lower = more sensitive. 22 is a typical FT6336U value — tune per panel."
+    },
+    {
+      "key":     "active_period",
+      "label":   "Active report period",
+      "type":    "int",
+      "default": 12,
+      "min":     1,
+      "max":     255,
+      "comment": "Written to PERIODACTIVE (0x88) at init. Scan/report period in active mode (lower = faster reporting, more power). 12 is a typical FT6336U value."
     },
     {
       "key":     "swap_xy",
-      "label":   "Swap X / Y",
+      "label":   "Swap X/Y axes",
       "type":    "bool",
       "default": false,
-      "comment": "Some panels mount the touch sensor rotated; display_handler swaps raw x / raw y before passing to LVGL when true."
+      "comment": "Orientation (applied by the display handler, not the chip). Transpose: use the touch X as the display Y and vice versa — for a panel scanned 90 deg rotated vs the display. Applied before mirror."
+    },
+    {
+      "key":     "mirror_x",
+      "label":   "Mirror X",
+      "type":    "bool",
+      "default": false,
+      "comment": "Flip the X axis against the display width (after any swap)."
+    },
+    {
+      "key":     "mirror_y",
+      "label":   "Mirror Y",
+      "type":    "bool",
+      "default": false,
+      "comment": "Flip the Y axis against the display height (after any swap)."
     }
   ]
 }

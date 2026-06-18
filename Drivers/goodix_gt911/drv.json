@@ -42,7 +42,7 @@
       "byte_len":   2,
       "byte_order": "le",
       "type":       "int",
-      "comment":    "0x8150..0x8151 — touch X coordinate (panel units, 0..x_max). Sticky between touches: only valid when 'pressed' == true. Re-mapping (mirror / swap) is intentionally NOT done here so the raw chip output stays inspectable; the display_handler applies the per-board transform from custom.swap_xy / x_max."
+      "comment":    "0x8150..0x8151 — raw touch X coordinate (panel units), little-endian. Sticky between touches: only valid when 'pressed' == true. Orientation (swap_xy / mirror_x / mirror_y) is NOT applied here — the display handler does it on the published value against the display resolution."
     },
     {
       "label":      "y",

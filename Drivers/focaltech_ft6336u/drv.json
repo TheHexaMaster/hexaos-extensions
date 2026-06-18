@@ -1,12 +1,42 @@
 {
+  "reset_timing": {
+    "pre_low_ms":   5,
+    "pulse_ms":     10,
+    "post_high_ms": 300
+  },
+
   "registers": [
+    {
+      "name": "g_mode",
+      "addr": 164,
+      "addr_bytes": 1,
+      "len": 1,
+      "format": "uint8",
+      "comment": "0xA4 G_MODE — interrupt mode. 0 = polling, 1 = trigger (INT pulses on a touch event). Written at init from int_gpio presence."
+    },
+    {
+      "name": "th_group",
+      "addr": 128,
+      "addr_bytes": 1,
+      "len": 1,
+      "format": "uint8",
+      "comment": "0x80 TH_GROUP — touch-detection threshold. Written at init from touch_threshold."
+    },
+    {
+      "name": "periodactive",
+      "addr": 136,
+      "addr_bytes": 1,
+      "len": 1,
+      "format": "uint8",
+      "comment": "0x88 PERIODACTIVE — active-mode scan/report period. Written at init from active_period."
+    },
     {
       "name": "td_status",
       "addr": 2,
       "addr_bytes": 1,
       "len": 1,
       "format": "uint8",
-      "comment": "0x02 TD_STATUS — bits[3:0] = number of active touch points (0..2); upper bits reserved."
+      "comment": "0x02 TD_STATUS — bits[3:0] = number of active touch points (0..2)."
     },
     {
       "name": "touch1",
@@ -18,6 +48,24 @@
     }
   ],
 
+  "init_sequence": [
+    {
+      "register":   "g_mode",
+      "write_expr": "(settings.int_gpio >= 0) ? 1 : 0",
+      "comment":    "INT pin configured -> trigger (interrupt) mode; no INT pin -> polling mode."
+    },
+    {
+      "register":   "th_group",
+      "write_expr": "settings.touch_threshold",
+      "comment":    "Apply the user touch threshold."
+    },
+    {
+      "register":   "periodactive",
+      "write_expr": "settings.active_period",
+      "comment":    "Apply the user active-mode report period."
+    }
+  ],
+
   "fields": [
     {
       "label":    "pressed",
@@ -25,7 +73,7 @@
       "mask":     15,
       "shift":    0,
       "type":     "bool",
-      "comment":  "TD_STATUS low nibble = touch count; 0 = released, 1..2 = pressed. The engine's bool conversion is value != 0."
+      "comment":  "TD_STATUS low nibble = touch count; 0 = released, 1..2 = pressed. Engine bool conversion is value != 0."
     },
     {
       "label":      "x",

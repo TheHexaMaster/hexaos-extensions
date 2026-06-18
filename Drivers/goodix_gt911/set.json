@@ -3,24 +3,25 @@
   "poll_ms": { "default": 20 },
   "settings": [
     {
-      "key":     "x_max",
-      "label":   "Max X (panel units)",
-      "type":    "int",
-      "default": 1024,
-      "comment": "Used by display_handler in Stage 4b to clamp / scale the raw x reading into LVGL display coordinates."
-    },
-    {
-      "key":     "y_max",
-      "label":   "Max Y (panel units)",
-      "type":    "int",
-      "default": 600
-    },
-    {
       "key":     "swap_xy",
-      "label":   "Swap X / Y",
+      "label":   "Swap X/Y axes",
       "type":    "bool",
       "default": false,
-      "comment": "Some 1024x600 panels mount the touch sensor rotated; display_handler will swap raw x / raw y before passing to LVGL when this is true. Stage 4a publishes the raw chip output regardless."
+      "comment": "Orientation (applied by the display handler, not the chip). Transpose: use the touch X as the display Y and vice versa — for a panel scanned 90 deg rotated vs the display. Applied before mirror."
+    },
+    {
+      "key":     "mirror_x",
+      "label":   "Mirror X",
+      "type":    "bool",
+      "default": false,
+      "comment": "Flip the X axis against the display width (after any swap)."
+    },
+    {
+      "key":     "mirror_y",
+      "label":   "Mirror Y",
+      "type":    "bool",
+      "default": false,
+      "comment": "Flip the Y axis against the display height (after any swap)."
     }
   ]
 }
