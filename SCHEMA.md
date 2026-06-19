@@ -201,3 +201,119 @@ rules are mandatory:
    catalogue**, NOT in this Git repo — Git history already preserves every prior
    version here. The publish GitHub Action is responsible for moving the superseded
    `cat/set/drv` into the `<old-version>/` sub-folder on the mirror.
+
+---
+
+# Dashboard Widget Package Schema (`DashboardWidgets/<slug>/`)
+
+A second extension type: **Dashboard Widgets** — community widgets for the HexaOS
+**WebUI dashboard** (the `HexaDash` registry). A package ships a JS module (+
+optional CSS + optional assets) that registers one or more widget types into the
+same registry the built-in dashboard widgets use; the firmware stores/serves the
+files, the WebUI loads them on dashboard open, and a dashboard's JSON references
+the widget by its type id.
+
+> **NOT** HMI Widgets. *HMI Widgets* are a separate, future extension type for the
+> **display engine** (LVGL on the physical LCD/touch HMI) and are unrelated to
+> these dashboard widgets. Keep the two categories distinct.
+
+## Mandatory files in every `DashboardWidgets/<slug>/`
+- `cat.json` — identity / metadata + the asset declaration (source of truth).
+- `widget.js` — the body: calls `window.HexaDash.register(typeId, def)` once per
+  provided widget. **Authoritative** — the widget's options live in `def.opts`
+  (there is intentionally **no `set.json`**; the dashboard config form renders
+  straight from `def.opts`, identical to the built-ins).
+- `readme.md` — human docs (kept on device, shown in the widget info).
+- `changelog.md` — change history (repo-only; stripped on device).
+
+`slug` = `author_widgetname` (lowercase snake_case), unique, = directory name.
+
+## Optional files
+- `widget.css` — styles. **Namespace every class with the slug** (e.g.
+  `.acme-battery-fill`) to avoid clashing with `.dw-*` or other packages. May read
+  the dashboard CSS variables (`--dw-bg`, `--dwv-color`, …).
+- `preview.svg` — catalogue thumbnail.
+- `assets/…` — arbitrary runtime files (`.svg .png .webp .woff2 .json` …), nested
+  paths allowed. **Served, never executed.** Reference them at runtime via
+  `window.HexaDash.asset(slug, relpath)`.
+
+## `cat.json` (identity / metadata / asset manifest)
+```json
+{
+  "slug": "acme_battery",
+  "kind": "dashboard_widget",
+  "category": "display",
+  "name": "Battery",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-19",
+  "updated": "2026-06-19",
+  "author": "Acme",
+  "description": "Vertical battery gauge filled by a 0-100% datapoint.",
+  "tags": ["battery", "percent", "gauge"],
+  "dependencies": [],
+  "provides": ["acme_battery.battery"],
+  "assets": { "js": "widget.js", "css": "widget.css", "files": ["assets/dial.svg"] }
+}
+```
+- `kind`: always `"dashboard_widget"`.
+- `category`: `display | control | chart | layout` — must equal each widget's
+  `def.cat`. Used for catalogue grouping/search.
+- `version`: widget **semver**; bump on every change + add a `changelog.md` entry.
+- `hexaos_compat`: minimum HexaOS version (`HX_VERSION`) — the single compat gate
+  (as drivers). `released`/`updated`: `YYYY-MM-DD`. `author` ≤64, `description`
+  ≤256, `tags` ≤10.
+- `provides`: the type ids registered by `widget.js`. **Type id =
+  `<slug>.<widget>`** (namespaced) so it never collides with built-ins or other
+  packages — a package may provide several.
+- `assets`: the author's runtime-file declaration. `js` required, `css` optional,
+  `files[]` optional (extra assets under the package, relative paths, no `..`).
+  The device install fetches exactly `cat.json` + `js` + `css` (if any) +
+  `readme.md` + every `files[]` entry; `changelog.md` is never sent to the device.
+
+## `widget.js` (the HexaDash contract)
+```js
+window.HexaDash.register("acme_battery.battery", {
+  name: "Battery",                 // picker label
+  cat: "display",                  // display | control | chart | layout
+  icon: "<rect .../>",             // SVG inner string, 18x18 viewBox (picker card)
+  w: 2, h: 2, minW: 1, minH: 1,    // default + minimum span (grid units)
+  needsBind: true,                 // requires a datapoint
+  writable: false,                 // writes a datapoint (affects default picker filter)
+  pick: "number",                  // any | writable | enum | numeric | number | writenum
+  opts: [                          // option schema rendered by the config form
+    { key: "min", label: "Empty at", type: "number", col: 2, default: 0 }
+    // type: bool | number | text | color | select | icon
+    // select -> options:[{v,l}];  number/text -> ph? ;  col 1|2|3 = fields per row
+  ],
+  render(host, ctx) { /* build DOM once into host (the .dw element) */ },
+  update(host, ctx) { /* called on every live delta + on resize; refresh values */ },
+  destroy(host, ctx) { /* optional: clear timers / observers */ }
+});
+```
+`ctx` (built by the dashboard — a widget **never touches `this`**, only `host` +
+`ctx`): `w`, `cfg` (= the option values), `title()`, `point()` (current LIVE point
+or `null`), `value()`, `fmt(p,dec)`, `boolOf(p)`, `iconSvg(name,colour)`,
+`history(fromMs,toMs,max)` → `Promise<[{t,v}]>` recorder series (or `null`),
+`write(value)`, and `window.HexaDash.asset(slug, relpath)` for packaged assets.
+
+Lifecycle: `render` once → `update` on every live delta (and resize) → `destroy`
+on removal. In dashboard **edit mode** a transparent shield overlays the cell, so
+clicks/drag drive the editor, not the widget.
+
+## Install / serve / load (device side, summary)
+- Install: `POST /api/extensions/dashboard-widgets/install` — the browser fetches
+  the package from hexaos.io and POSTs a JSON envelope of its files; the firmware
+  writes them under `/hexaos/extensions/dashboard_widgets/<slug>/` (gate
+  `hexaos_compat`, enforce a per-package **256 KiB** budget, sanitize paths).
+- Serve: `GET /ext/dw/<slug>/<file>` serves an installed file with the right MIME.
+- Load: on dashboard open the WebUI fetches the installed list
+  (`GET /api/extensions/dashboard-widgets`) and injects each `widget.css` +
+  `widget.js`; community types then appear in the picker alongside the built-ins.
+- Uninstall: `POST /api/extensions/dashboard-widgets/uninstall?slug=` — refused
+  while any saved dashboard still uses one of the package's type ids (refcount).
+
+## Versioning & updates
+Same rules as drivers: every change bumps `cat.json.version` (PATCH/MINOR/MAJOR) +
+`cat.json.updated` and adds a `changelog.md` entry; the hexaos.io mirror keeps
+prior versions in `<old-version>/` sub-folders (Git history preserves them here).

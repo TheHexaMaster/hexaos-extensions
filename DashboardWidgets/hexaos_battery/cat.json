@@ -1,0 +1,16 @@
+{
+  "slug": "hexaos_battery",
+  "kind": "dashboard_widget",
+  "category": "display",
+  "name": "Battery",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-19",
+  "updated": "2026-06-19",
+  "author": "Martin Macak",
+  "description": "Vertical battery gauge filled by a numeric datapoint (e.g. state-of-charge or level in %); fill turns to the low colour below a threshold, optional % label. Reference Dashboard Widget package.",
+  "tags": ["battery", "percent", "level", "gauge", "reference"],
+  "dependencies": [],
+  "provides": ["hexaos_battery.battery"],
+  "assets": { "js": "widget.js", "css": "widget.css" }
+}

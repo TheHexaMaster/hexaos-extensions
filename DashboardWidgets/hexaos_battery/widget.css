@@ -1,0 +1,55 @@
+/* hexaos_battery — widget styles.
+ * Every class is namespaced with the slug-derived prefix .hxbat- so it can never
+ * collide with the dashboard's own .dw-* classes or with another widget package.
+ * Dashboard CSS variables (--dwv-fs, --dwv-color, ...) may be read freely.
+ * Sizes use container-query units (cqh) so the widget scales with its cell. */
+
+.hxbat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .2em;
+  padding: .2em 0;
+}
+.hxbat-cap {
+  width: 30%;
+  height: .5em;
+  background: #30363d;
+  border-radius: .15em .15em 0 0;
+}
+.hxbat-shell {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 60%;
+  border: 2px solid #30363d;
+  border-radius: .25em;
+  background: #0d1117;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .5);
+}
+.hxbat-fill {
+  width: 100%;
+  height: 0;
+  background: #3fb950;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
+  transition: height .4s cubic-bezier(.4, 0, .2, 1), background .25s;
+}
+.hxbat-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--dwv-color, #f0f3f6);
+  font-size: calc(var(--dwv-fs, 20) * 1cqh);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .65);
+  pointer-events: none;
+}
