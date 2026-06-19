@@ -276,15 +276,21 @@ the widget by its type id.
 window.HexaDash.register("acme_battery.battery", {
   name: "Battery",                 // picker label
   cat: "display",                  // display | control | chart | layout
-  icon: "<rect .../>",             // SVG inner string, 18x18 viewBox (picker card)
+  icon: "<rect .../>",             // SVG inner string, 18x18 viewBox (picker card);
+                                   //   wrapped in <svg stroke=currentColor> by the picker
   w: 2, h: 2, minW: 1, minH: 1,    // default + minimum span (grid units)
-  needsBind: true,                 // requires a datapoint
+  needsBind: true,                 // requires the single main datapoint
   writable: false,                 // writes a datapoint (affects default picker filter)
   pick: "number",                  // any | writable | enum | numeric | number | writenum
+  cfgOnAdd: false,                 // optional: auto-open the config form when added
+                                   //   (use for multi-point widgets that have no main bind)
   opts: [                          // option schema rendered by the config form
     { key: "min", label: "Empty at", type: "number", col: 2, default: 0 }
-    // type: bool | number | text | color | select | icon
+    // type: bool | number | text | color | select | icon | point
     // select -> options:[{v,l}];  number/text -> ph? ;  col 1|2|3 = fields per row
+    // point  -> binds an EXTRA datapoint (multi-point widgets); pick? = the picker
+    //           filter; the chosen slug is stored in cfg[key], resolve it with
+    //           ctx.resolve(slug). { key:"grid", label:"Grid", type:"point", pick:"number" }
   ],
   render(host, ctx) { /* build DOM once into host (the .dw element) */ },
   update(host, ctx) { /* called on every live delta + on resize; refresh values */ },
@@ -293,9 +299,11 @@ window.HexaDash.register("acme_battery.battery", {
 ```
 `ctx` (built by the dashboard — a widget **never touches `this`**, only `host` +
 `ctx`): `w`, `cfg` (= the option values), `title()`, `point()` (current LIVE point
-or `null`), `value()`, `fmt(p,dec)`, `boolOf(p)`, `iconSvg(name,colour)`,
-`history(fromMs,toMs,max)` → `Promise<[{t,v}]>` recorder series (or `null`),
-`write(value)`, and `window.HexaDash.asset(slug, relpath)` for packaged assets.
+of the main bind, or `null`), `resolve(slug)` (LIVE point for ANY slug — use with
+`point`-type opts for multi-point widgets), `value()`, `fmt(p,dec)`, `boolOf(p)`,
+`iconSvg(name,colour)`, `history(fromMs,toMs,max)` → `Promise<[{t,v}]>` recorder
+series (or `null`), `write(value)`, and `window.HexaDash.asset(slug, relpath)` for
+packaged assets.
 
 Lifecycle: `render` once → `update` on every live delta (and resize) → `destroy`
 on removal. In dashboard **edit mode** a transparent shield overlays the cell, so

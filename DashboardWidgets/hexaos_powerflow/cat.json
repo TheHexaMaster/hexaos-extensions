@@ -1,0 +1,16 @@
+{
+  "slug": "hexaos_powerflow",
+  "kind": "dashboard_widget",
+  "category": "chart",
+  "name": "Power Flow",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-19",
+  "updated": "2026-06-19",
+  "author": "Martin Macak",
+  "description": "Animated energy power-flow diagram (Grid, Solar, Battery, Home). Each node binds a signed power datapoint; dots travel along every link in the direction of flow with a speed scaled by power. Multi-point widget. Inspired by the Home Assistant power-flow card.",
+  "tags": ["power", "energy", "solar", "battery", "grid", "flow", "diagram"],
+  "dependencies": [],
+  "provides": ["hexaos_powerflow.powerflow"],
+  "assets": { "js": "widget.js", "css": "widget.css" }
+}
