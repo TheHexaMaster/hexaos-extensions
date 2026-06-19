@@ -1,50 +1,53 @@
 /* hexaos_powerflow — HexaOS Dashboard Widget: animated energy power-flow diagram.
  *
- * A diamond of four nodes — Solar (top), Grid (left), Home (right), Battery
- * (bottom) — with animated dots travelling along each link in the direction of
- * energy flow, their speed scaled by the power on that link. Inspired by the
- * Home Assistant "power-flow-card-plus" card.
+ * Square layout (2x2):  Solar = top-left, Battery = top-right,
+ *                       Grid  = bottom-left, House = bottom-right.
+ * Energy flows are drawn as a stream of glowing balls gliding from source to
+ * sink along the connecting lines; the more power on a link, the bigger AND the
+ * faster its balls. The battery node carries a circular state-of-charge ring.
+ * Inspired by the Home Assistant "power-flow-card-plus" card.
  *
- * MULTI-POINT: unlike single-binding widgets this one binds a signed power
- * datapoint PER NODE via `point`-type opts and reads them with `ctx.resolve(slug)`
- * (needs the multi-point dashboard widget-API). Sign convention (each invertible):
- *   Grid  + = import (grid -> home),     - = export (home -> grid)
- *   Battery + = discharge (batt -> home), - = charge  (-> batt)
- *   Solar = production (always out)
+ * MULTI-POINT: binds a signed power datapoint PER NODE via `point`-type opts and
+ * reads them with `ctx.resolve(slug)`. Sign convention (each invertible):
+ *   Grid    + = import (grid -> home),     - = export (home -> grid)
+ *   Battery + = discharge (battery -> home), - = charge (-> battery)
+ *   Solar   = production (always out)
  * Home is taken from its own point, or auto-computed from the energy balance
  * (solar + grid_import + batt_discharge - grid_export - batt_charge) when unbound.
  *
- * Contract: touch only `host` + `ctx`, never `this`/Alpine. Classes are .hxpf-*.
+ * The ball stream runs on a requestAnimationFrame loop (started in render, stopped
+ * in destroy); update() only refreshes the data it reads. Classes are .hxpf-*.
  */
 (function () {
   if (!window.HexaDash || !window.HexaDash.register) return;
 
-  /* diamond node centres in the fixed 0..100 SVG viewBox */
-  var POS = { solar: [50, 20], grid: [18, 52], home: [82, 52], batt: [50, 80] };
-  var NR = 9.5;   /* node circle radius */
-  var GAP = 10.5; /* link endpoints pulled this far off the node centres */
+  /* node centres (square corners) in the fixed 0..100 SVG viewBox */
+  var POS = { solar: [27, 27], batt: [73, 27], grid: [27, 73], home: [73, 73] };
+  var NR = 14;     /* node radius */
+  var RIM = 15.6;  /* link endpoints sit this far from a node centre (just past the rim) */
+  var BPL = 3;     /* balls per link */
 
-  /* straight link path from node a to node b, trimmed to the circle edges */
-  function link(a, b) {
-    var A = POS[a], B = POS[b], dx = B[0] - A[0], dy = B[1] - A[1];
-    var L = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / L, uy = dy / L;
-    return "M" + (A[0] + ux * GAP).toFixed(2) + "," + (A[1] + uy * GAP).toFixed(2) +
-           "L" + (B[0] - ux * GAP).toFixed(2) + "," + (B[1] - uy * GAP).toFixed(2);
-  }
-
-  /* node glyphs drawn around their local origin (~ +-5 units); stroke = node colour */
-  var ICON = {
-    solar: "<circle r='2.4'/><path d='M0,-5V-3.4M0,5V3.4M-5,0H-3.4M5,0H3.4M-3.5,-3.5L-2.4,-2.4M3.5,3.5L2.4,2.4M-3.5,3.5L-2.4,2.4M3.5,-3.5L2.4,-2.4'/>",
-    grid:  "<path d='M-3.6,4.6L-1.3,-4.4M3.6,4.6L1.3,-4.4M-1.6,-4.4H1.6M-2.1,-0.6H2.1M-2.8,2H2.8M-1.3,-4.4L1.3,-2M1.3,-4.4L-1.3,-2'/>",
-    home:  "<path d='M-4.2,0L0,-4.2L4.2,0M-3,-1.2V4.2H3V-1.2M-1,4.2V1.6H1V4.2'/>",
-    batt:  "<rect x='-4.6' y='-3' width='8.2' height='6' rx='1'/><rect x='3.6' y='-1.3' width='1.3' height='2.6' rx='.4'/><rect class='hxpf-bfill' x='-4' y='-2.4' width='0' height='4.8' rx='.5'/>"
-  };
-
-  /* faint base lines (undirected) + animated dot flows (key, from, to) */
-  var BASES = [["solar","home"],["solar","grid"],["solar","batt"],["grid","home"],["batt","home"],["grid","batt"]];
-  var FLOWS = [["s2h","solar","home"],["s2g","solar","grid"],["s2b","solar","batt"],
-               ["g2h","grid","home"],["b2h","batt","home"],["g2b","grid","batt"],["b2g","batt","grid"]];
+  /* directed flows: key, from-node, to-node, source letter (ball colour) */
+  var FLOWS = [
+    { k: "s2b", a: "solar", b: "batt", src: "s" }, /* solar -> battery (charge)  */
+    { k: "s2g", a: "solar", b: "grid", src: "s" }, /* solar -> grid (export)     */
+    { k: "s2h", a: "solar", b: "home", src: "s" }, /* solar -> home (diagonal)   */
+    { k: "b2h", a: "batt",  b: "home", src: "b" }, /* battery -> home            */
+    { k: "g2h", a: "grid",  b: "home", src: "g" }, /* grid -> home               */
+    { k: "g2b", a: "grid",  b: "batt", src: "g" }, /* grid -> battery (diagonal) */
+    { k: "b2g", a: "batt",  b: "grid", src: "b" }  /* battery -> grid (diagonal) */
+  ];
+  /* undirected base lines (4 sides + 2 diagonals of the square) */
+  var BASES = [["solar","batt"],["solar","grid"],["batt","home"],["grid","home"],["solar","home"],["grid","batt"]];
   var NODES = ["solar", "grid", "home", "batt"];
+
+  /* node glyphs around their local origin (~ +-5 units); stroke = node colour */
+  var ICON = {
+    solar: "<circle r='2.5'/><path d='M0,-5.2V-3.5M0,5.2V3.5M-5.2,0H-3.5M5.2,0H3.5M-3.7,-3.7L-2.5,-2.5M3.7,3.7L2.5,2.5M-3.7,3.7L-2.5,2.5M3.7,-3.7L2.5,-2.5'/>",
+    grid:  "<path d='M-3.7,4.8L-1.3,-4.6M3.7,4.8L1.3,-4.6M-1.6,-4.6H1.6M-2.2,-0.5H2.2M-3,2.2H3M-1.3,-4.6L1.3,-2M1.3,-4.6L-1.3,-2'/>",
+    home:  "<path d='M-4.4,0.2L0,-4.4L4.4,0.2M-3.1,-1.1V4.4H3.1V-1.1M-1.1,4.4V1.7H1.1V4.4'/>",
+    batt:  "<rect x='-4.4' y='-2.7' width='7.4' height='5.4' rx='1.1'/><rect x='3.2' y='-1.2' width='1.4' height='2.4' rx='.4'/><path d='M.6,-1.5L-1.1,.4H1.1L-.6,1.9' stroke-width='1.1'/>"
+  };
 
   function num(ctx, slug) {
     if (!slug || !ctx.resolve) return null;
@@ -57,9 +60,9 @@
   window.HexaDash.register("hexaos_powerflow.powerflow", {
     name: "Power Flow",
     cat: "chart",
-    /* bare SVG inner string (the picker wraps it in <svg stroke=currentColor>):
-       a diamond with a node dot on each corner. */
-    icon: "<path d='M9 2.5l5.4 6.5L9 15.5 3.6 9z'/><circle cx='9' cy='2.5' r='1.1' fill='currentColor' stroke='none'/><circle cx='15' cy='9' r='1.1' fill='currentColor' stroke='none'/><circle cx='3' cy='9' r='1.1' fill='currentColor' stroke='none'/><circle cx='9' cy='15.5' r='1.1' fill='currentColor' stroke='none'/>",
+    /* bare SVG inner string (picker wraps it in <svg stroke=currentColor>):
+       a square with a node dot in each corner. */
+    icon: "<rect x='3' y='3' width='12' height='12' rx='2.5'/><circle cx='6' cy='6' r='1.15' fill='currentColor' stroke='none'/><circle cx='12' cy='6' r='1.15' fill='currentColor' stroke='none'/><circle cx='6' cy='12' r='1.15' fill='currentColor' stroke='none'/><circle cx='12' cy='12' r='1.15' fill='currentColor' stroke='none'/>",
     w: 5, h: 5, minW: 4, minH: 4,
     needsBind: false,
     writable: false,
@@ -86,37 +89,94 @@
       { key: "colBatt",  label: "Battery colour", type: "color", default: "#3fb950" },
       { key: "colHome",  label: "Home colour",    type: "color", default: "#9aa4af" },
 
-      { key: "flowColor", label: "Dot colour", type: "select", default: "source",
+      { key: "flowColor", label: "Ball colour", type: "select", default: "source",
         options: [{ v: "source", l: "By source" }, { v: "fixed", l: "Fixed" }] },
-      { key: "flowFixed", label: "Fixed dot colour", type: "color", default: "#58a6ff" },
+      { key: "flowFixed", label: "Fixed ball colour", type: "color", default: "#58a6ff" },
 
-      { key: "kiloThr",   label: "kW threshold (W)",  type: "number", col: 3, default: 1000 },
-      { key: "decimals",  label: "kW decimals",       type: "number", col: 3, default: 1 },
-      { key: "threshold", label: "Hide flow < (W)",   type: "number", col: 3, default: 10 },
-      { key: "flowMin",   label: "Fastest dot (s)",   type: "number", col: 3, default: 1 },
-      { key: "flowMax",   label: "Slowest dot (s)",   type: "number", col: 3, default: 6 },
-      { key: "flowRef",   label: "Full speed at (W)", type: "number", col: 3, default: 2000 },
-      { key: "dotSize",   label: "Dot size",          type: "number", col: 2, default: 2.4 }
+      { key: "kiloThr",    label: "kW threshold (W)",  type: "number", col: 3, default: 1000 },
+      { key: "decimals",   label: "kW decimals",       type: "number", col: 3, default: 1 },
+      { key: "threshold",  label: "Hide flow < (W)",   type: "number", col: 3, default: 10 },
+      { key: "flowRef",    label: "Full power at (W)", type: "number", col: 3, default: 2000 },
+      { key: "ballScale",  label: "Ball size",         type: "number", col: 3, default: 1 },
+      { key: "speedScale", label: "Flow speed",        type: "number", col: 3, default: 1 }
     ],
 
-    render: function (host) {
+    render: function (host, ctx) {
+      if (host._pf && host._pf.raf) { cancelAnimationFrame(host._pf.raf); host._pf = null; }
+      var uid = (ctx && ctx.w && ctx.w.id) || "x";
+
+      /* trimmed straight segment between two node centres */
+      var seg = function (a, b) {
+        var A = POS[a], B = POS[b], dx = B[0] - A[0], dy = B[1] - A[1];
+        var L = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / L, uy = dy / L;
+        return { x0: A[0] + ux * RIM, y0: A[1] + uy * RIM, x1: B[0] - ux * RIM, y1: B[1] - uy * RIM };
+      };
+      var geo = {};
+      FLOWS.forEach(function (f) { geo[f.k] = seg(f.a, f.b); });
+
       var s = "<svg class='hxpf-svg' viewBox='0 0 100 100'>";
-      var i;
-      for (i = 0; i < BASES.length; i++)
-        s += "<path class='hxpf-base' d='" + link(BASES[i][0], BASES[i][1]) + "'/>";
-      for (i = 0; i < FLOWS.length; i++)
-        s += "<path class='hxpf-dots' data-k='" + FLOWS[i][0] + "' d='" + link(FLOWS[i][1], FLOWS[i][2]) + "'/>";
-      for (i = 0; i < NODES.length; i++) {
-        var k = NODES[i], pos = POS[k], up = (k === "solar");
-        s += "<g class='hxpf-node' data-k='" + k + "' transform='translate(" + pos[0] + "," + pos[1] + ")'>" +
-               "<circle class='hxpf-bg' r='" + NR + "'/>" +
-               "<g class='hxpf-ico'>" + ICON[k] + "</g>" +
-               "<text class='hxpf-val' y='" + (up ? -12.5 : 12.5) + "'>--</text>" +
-               "<text class='hxpf-lbl' y='" + (up ? -16.5 : 16.5) + "'></text>" +
-             "</g>";
-      }
+      s += "<defs>" +
+        "<radialGradient id='hxpf-nbg-" + uid + "' cx='50%' cy='34%' r='78%'>" +
+          "<stop offset='0%' stop-color='#2b313b'/><stop offset='58%' stop-color='#191c22'/><stop offset='100%' stop-color='#0f1115'/>" +
+        "</radialGradient>" +
+        "<filter id='hxpf-glow-" + uid + "' x='-70%' y='-70%' width='240%' height='240%'>" +
+          "<feGaussianBlur stdDeviation='1.25' result='b'/>" +
+          "<feMerge><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge>" +
+        "</filter></defs>";
+
+      BASES.forEach(function (p) { var g = seg(p[0], p[1]);
+        s += "<line class='hxpf-base' x1='" + g.x0.toFixed(2) + "' y1='" + g.y0.toFixed(2) + "' x2='" + g.x1.toFixed(2) + "' y2='" + g.y1.toFixed(2) + "'/>"; });
+
+      s += "<g class='hxpf-balls' filter='url(#hxpf-glow-" + uid + ")'>";
+      FLOWS.forEach(function (f) { for (var i = 0; i < BPL; i++) s += "<circle class='hxpf-ball' data-fk='" + f.k + "' r='0'/>"; });
+      s += "</g>";
+
+      NODES.forEach(function (k) {
+        var top = (k === "solar" || k === "batt"), lblY = top ? -(NR + 4.5) : (NR + 5.5);
+        s += "<g class='hxpf-node' data-k='" + k + "' transform='translate(" + POS[k][0] + "," + POS[k][1] + ")'>";
+        if (k === "batt") {
+          s += "<circle class='hxpf-soc-track' r='" + (NR + 3.8) + "' pathLength='100'/>";
+          s += "<circle class='hxpf-soc-arc' r='" + (NR + 3.8) + "' pathLength='100' transform='rotate(-90)'/>";
+        }
+        s += "<circle class='hxpf-bg' r='" + NR + "' fill='url(#hxpf-nbg-" + uid + ")'/>";
+        s += "<g class='hxpf-ico' transform='translate(0,-4.6) scale(.9)'>" + ICON[k] + "</g>";
+        s += "<text class='hxpf-val' y='6.8'>--</text>";
+        s += "<text class='hxpf-lbl' y='" + lblY + "'></text>";
+        s += "</g>";
+      });
       s += "</svg>";
       host.innerHTML = "<div class='dw-name'></div><div class='hxpf-stage'>" + s + "</div>";
+
+      /* cache balls + start the animation loop */
+      var balls = [], perFk = {};
+      Array.prototype.forEach.call(host.querySelectorAll(".hxpf-ball"), function (el) {
+        var fk = el.getAttribute("data-fk"), n = perFk[fk] || 0; perFk[fk] = n + 1;
+        balls.push({ el: el, fk: fk, phase: n / BPL });
+      });
+      var pf = host._pf = { balls: balls, geo: geo, flows: {}, norm: {}, params: null, last: 0 };
+      var loop = function (now) {
+        if (host._pf !== pf) return;                       /* superseded by a remount */
+        var dt = pf.last ? Math.min(0.05, (now - pf.last) / 1000) : 0; pf.last = now;
+        var P = pf.params;
+        if (P) {
+          for (var i = 0; i < balls.length; i++) {
+            var bl = balls[i], val = pf.flows[bl.fk] || 0;
+            if (!(val > P.hide)) { if (bl.el.style.display !== "none") bl.el.style.display = "none"; continue; }
+            var nz = pf.norm[bl.fk] || 0;
+            bl.phase += (P.sMin + (P.sMax - P.sMin) * nz) * dt;
+            if (bl.phase >= 1) bl.phase -= 1;
+            var g = pf.geo[bl.fk], t = bl.phase;
+            var fade = Math.min(t / P.fade, (1 - t) / P.fade); if (fade > 1) fade = 1; if (fade < 0) fade = 0;
+            bl.el.setAttribute("cx", (g.x0 + (g.x1 - g.x0) * t).toFixed(2));
+            bl.el.setAttribute("cy", (g.y0 + (g.y1 - g.y0) * t).toFixed(2));
+            bl.el.setAttribute("r", (P.rMin + (P.rMax - P.rMin) * nz).toFixed(2));
+            bl.el.style.opacity = fade.toFixed(2);
+            if (bl.el.style.display === "none") bl.el.style.display = "";
+          }
+        }
+        pf.raf = requestAnimationFrame(loop);
+      };
+      pf.raf = requestAnimationFrame(loop);
     },
 
     update: function (host, ctx) {
@@ -143,10 +203,21 @@
       var s2g = Math.min(S2, Ge);
       var H1 = H - s2h, b2h = Math.min(Bd, H1), H2 = H1 - b2h;
       var g2h = Math.max(0, H2);
-      var g2b = Math.max(0, Bc - s2b);                                  /* charge not from solar -> from grid */
-      var b2g = Math.min(Math.max(0, Bd - b2h), Math.max(0, Ge - s2g)); /* export beyond solar -> from battery surplus */
-      var F = { s2h: s2h, s2g: s2g, s2b: s2b, g2h: g2h, b2h: b2h, g2b: g2b, b2g: b2g };
+      var g2b = Math.max(0, Bc - s2b);                                  /* charge not from solar -> from grid     */
+      var b2g = Math.min(Math.max(0, Bd - b2h), Math.max(0, Ge - s2g)); /* export beyond solar -> battery surplus */
+      var F = { s2b: s2b, s2g: s2g, s2h: s2h, b2h: b2h, g2h: g2h, g2b: g2b, b2g: b2g };
 
+      var ref = Math.max(1, Number(o.flowRef) || 2000);
+      if (host._pf) {
+        var N = {}; for (var fk in F) N[fk] = Math.max(0, Math.min(1, F[fk] / ref));
+        var bs = (o.ballScale  != null && o.ballScale  !== "") ? Number(o.ballScale)  : 1; if (!(bs > 0)) bs = 1;
+        var ss = (o.speedScale != null && o.speedScale !== "") ? Number(o.speedScale) : 1; if (!(ss > 0)) ss = 1;
+        var hide = (o.threshold != null && o.threshold !== "") ? Number(o.threshold) : 10;
+        host._pf.flows = F; host._pf.norm = N;
+        host._pf.params = { hide: hide, sMin: 0.12 * ss, sMax: 0.6 * ss, rMin: 1.5 * bs, rMax: 3.1 * bs, fade: 0.16 };
+      }
+
+      var fixed = (o.flowColor || "source") === "fixed";
       var thr = (o.kiloThr != null && o.kiloThr !== "") ? Number(o.kiloThr) : 1000;
       var dec = (o.decimals != null && o.decimals !== "") ? Number(o.decimals) : 1;
       var fmt = function (w) {
@@ -154,13 +225,19 @@
         if (Math.abs(w) >= thr) return (w / 1000).toFixed(dec) + " kW";
         return Math.round(w) + " W";
       };
-
       var COL = { solar: o.colSolar || "#f5a623", grid: o.colGrid || "#5b9bd5",
                   batt: o.colBatt || "#3fb950", home: o.colHome || "#9aa4af" };
+
+      /* ball colours */
+      var SRC = { s: COL.solar, g: COL.grid, b: COL.batt };
+      if (host._pf) host._pf.balls.forEach(function (b) {
+        b.el.setAttribute("fill", fixed ? (o.flowFixed || "#58a6ff") : SRC[b.fk.charAt(0)]);
+      });
+
       var setN = function (k, val, lbl) {
         var g = host.querySelector(".hxpf-node[data-k='" + k + "']"); if (!g) return;
         var c = COL[k];
-        var bg = g.querySelector(".hxpf-bg");  if (bg) bg.style.stroke = c;
+        var bg = g.querySelector(".hxpf-bg");  if (bg) { bg.style.stroke = c; bg.style.filter = "drop-shadow(0 0 1.6px " + c + ")"; }
         var ic = g.querySelector(".hxpf-ico"); if (ic) ic.style.stroke = c;
         var vt = g.querySelector(".hxpf-val"); if (vt) { vt.textContent = val; vt.style.fill = c; }
         var lt = g.querySelector(".hxpf-lbl"); if (lt) { lt.textContent = lbl || ""; lt.style.display = (o.showLabels === false || !lbl) ? "none" : ""; }
@@ -171,34 +248,22 @@
       setN("batt",  batt == null ? "--" : fmt(Math.abs(batt)),
            (soc != null) ? (Math.round(soc) + "%") : (o.lblBatt || "Battery"));
 
-      /* reflect SOC as the battery icon fill level */
-      var bf = host.querySelector(".hxpf-node[data-k='batt'] .hxpf-bfill");
-      if (bf) {
-        var pct = (soc != null) ? Math.max(0, Math.min(100, soc)) : 0;
-        bf.setAttribute("width", (pct / 100 * 7.4).toFixed(2));
-        bf.style.fill = COL.batt;
-        bf.style.display = (soc != null) ? "" : "none";
+      /* battery SOC ring */
+      var arc = host.querySelector(".hxpf-node[data-k='batt'] .hxpf-soc-arc");
+      var trk = host.querySelector(".hxpf-node[data-k='batt'] .hxpf-soc-track");
+      if (arc && trk) {
+        if (soc != null) {
+          var sv = Math.max(0, Math.min(100, soc));
+          arc.setAttribute("stroke-dasharray", sv.toFixed(1) + " 100");
+          arc.style.stroke = sv > 50 ? "#3fb950" : (sv >= 20 ? "#d29922" : "#f85149");
+          arc.style.display = ""; trk.style.display = "";
+        } else { arc.style.display = "none"; trk.style.display = "none"; }
       }
+    },
 
-      /* flow dots — hide below threshold, colour by source (or fixed),
-         duration interpolated from power so heavier flows move faster. */
-      var hide = (o.threshold != null && o.threshold !== "") ? Number(o.threshold) : 10;
-      var fMin = Math.max(0.2, Number(o.flowMin) || 1);
-      var fMax = Math.max(fMin, Number(o.flowMax) || 6);
-      var ref  = Math.max(1, Number(o.flowRef) || 2000);
-      var dsz  = (o.dotSize != null && o.dotSize !== "") ? Number(o.dotSize) : 2.4;
-      var SRC  = { s: COL.solar, g: COL.grid, b: COL.batt };
-      var fixed = (o.flowColor || "source") === "fixed";
-      Object.keys(F).forEach(function (k) {
-        var el = host.querySelector(".hxpf-dots[data-k='" + k + "']"); if (!el) return;
-        var p = F[k];
-        if (!(p > hide)) { el.style.display = "none"; return; }
-        el.style.display = "";
-        var f = Math.max(0, Math.min(1, p / ref));
-        el.style.animationDuration = (fMax - (fMax - fMin) * f).toFixed(2) + "s";
-        el.style.strokeWidth = dsz;
-        el.style.stroke = fixed ? (o.flowFixed || "#58a6ff") : SRC[k.charAt(0)];
-      });
+    destroy: function (host) {
+      if (host._pf && host._pf.raf) cancelAnimationFrame(host._pf.raf);
+      host._pf = null;
     }
   });
 })();
