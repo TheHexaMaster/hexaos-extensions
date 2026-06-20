@@ -1,53 +1,56 @@
 # Power Flow — Dashboard Widget
 
+![Power Flow widget — default view](preview/powerflow.gif)
+
 An animated energy power-flow diagram for the HexaOS WebUI dashboard, inspired by
-the Home Assistant *power-flow-card-plus*. Four nodes sit on a square — **Solar**
-(top-left), **Battery** (top-right), **Grid** (bottom-left), **Home** (bottom-right)
-— and a stream of glowing balls glides from source to sink along each link. The
-more power a link carries, the **bigger and faster** its balls; the battery node
-carries a circular state-of-charge ring.
+the Home Assistant *power-flow-card-plus*. A **central inverter** sits in the middle
+with four nodes around it — **Solar** (top-left), **Battery** (top-right), **Grid**
+(bottom-left), **Home** (bottom-right). Each node is joined to the inverter by a line
+that carries a stream of glowing balls; the balls' **direction, speed and count
+follow that node's main value** (sign = direction, magnitude = speed/count). The
+battery node carries a **state-of-charge arc**.
 
 ## Binding (multi-point)
-This is a **multi-point** widget: instead of one datapoint it binds one per node,
-each picked from the config form (a `point`-type option). Bind a **signed power**
-datapoint per node — values in watts:
+Each node binds its own datapoints (picked from the config form's `point` options):
 
-| Node    | Point                | Sign convention                                  |
-|---------|----------------------|--------------------------------------------------|
-| Solar   | `Solar power`        | production (always flows out)                    |
-| Grid    | `Grid power`         | **+ import** (grid → home) / **− export**        |
-| Battery | `Battery power`      | **+ discharge** (battery → home) / **− charge**  |
-| Home    | `Home power` *(opt)* | consumption — auto-computed if left unbound      |
-| Battery | `Battery charge %` *(opt)* | drives the SOC ring + % label on the battery |
+| Node    | Main value (signed power)                         | Secondary | SOC |
+|---------|---------------------------------------------------|-----------|-----|
+| Solar   | production (flows to the inverter)                | optional  | —   |
+| Grid    | **+ import** (grid → inverter) / **− export**     | optional  | —   |
+| Battery | **+ discharge** (battery → inverter) / **− charge** | optional | optional % |
+| Home    | consumption (inverter → home)                     | optional  | —   |
 
-Any sensor whose sign is reversed can be flipped with the per-node **Invert** switch.
-When the Home point is left empty it is derived from the energy balance:
-`home = solar + grid_import + battery_discharge − grid_export − battery_charge`.
+- **Main value** — drives the value readout *and* the flow balls. Its **input unit**
+  is a dropdown (**W** or **kW**) telling the widget what HxLive feeds it; the display
+  auto-switches at 1000 W (**W → 0 decimals**, **kW → 2 decimals**).
+- **Secondary value** — a small info readout under the main one; shows the datapoint's
+  own HxLive unit with a configurable decimal count.
+- **Invert flow** — flip a node whose sensor uses the opposite sign convention.
+- A node with no main datapoint simply shows `--` and carries no flow.
 
-## Flow logic
-Per update the widget splits the measured powers into the seven links it can draw:
-solar → home / battery / grid, grid → home / battery, battery → home / grid.
-Solar serves the house first, then charges the battery, then exports; the house is
-supplied from solar first, then the battery, then the grid. Each link only streams
-balls while its power is above the **Hide flow** threshold.
+## State-of-charge ring (battery)
+Bind a **SOC %** datapoint to draw a second ring around the battery: an **arc that
+fills from the left edge of the % box, counter-clockwise around the bottom, to the
+right edge at 100 %**. Its colour follows a **3-stage threshold** you define —
+*critical* / *warning* / *normal*, each with its own colour and % cut-off.
 
-## Settings
-- **Points** — Solar / Grid / Battery / Home / Battery-charge datapoints.
-- **Invert** — flip the sign of any node whose sensor uses the opposite convention.
-- **Labels / colours** — per-node label text and colour; **Show labels** toggle.
-- **Ball colour** — *By source* (each ball takes its source node's colour) or *Fixed*.
-- **kW threshold / decimals** — values switch from `W` to `kW` above the threshold.
-- **Full power at (W)** — the power at which a link's balls reach full size and speed.
-- **Ball size / Flow speed** — multipliers to taste.
-- **Hide flow < (W)** — links below this power carry no balls.
+## Settings (per node + common)
+- **Colour** — node ring + value colour (default per node).
+- **Line** — colour (defaults to the node colour), width, type (**dashed / solid**),
+  dash on,off, opacity.
+- **Balls** — colour (defaults to the line colour), count, size; **full speed at (W)**
+  sets the power at which a node's balls reach full speed.
+- **Title** — optional text above a node: show/hide, text, common colour, offset.
+- **Hide flow below (W)** — a node carries no balls below this power.
 
 ## Anatomy
 - `cat.json` — identity + asset manifest; `provides: ["hexaos_powerflow.powerflow"]`.
-- `widget.js` — registers the widget into `window.HexaDash`; binds extra points via
-  `point` opts and reads them with `ctx.resolve(slug)`; the ball stream runs on a
+- `widget.js` — registers the widget into `window.HexaDash`; binds each node's points
+  via `point` opts and reads them with `ctx.resolve(slug)`; the ball stream runs on a
   `requestAnimationFrame` loop (started in `render`, stopped in `destroy`).
-- `widget.css` — namespaced `.hxpf-*` styles. The diagram is one square SVG viewBox,
-  so it scales with the cell and needs no resize handling.
+- `widget.css` — namespaced `.hxpf-*` styles. One SVG viewBox that scales with the cell.
+- `assets/*.svg` — the node + inverter illustrations, referenced via `HexaDash.asset()`.
+- `preview/` — catalogue screenshots / GIFs (docs only; not shipped to the device).
 
 The widget is read-only and needs no recorder; it repaints from the live cache on
 every update and touches only `host` and `ctx` — never Alpine/`this`.

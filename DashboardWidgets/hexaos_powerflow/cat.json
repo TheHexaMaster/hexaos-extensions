@@ -1,16 +1,20 @@
 {
   "slug": "hexaos_powerflow",
   "kind": "dashboard_widget",
-  "category": "chart",
+  "category": "diagram",
   "name": "Power Flow",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "hexaos_compat": "0.7.0",
   "released": "2026-06-19",
-  "updated": "2026-06-19",
+  "updated": "2026-06-20",
   "author": "Martin Macak",
-  "description": "Animated energy power-flow diagram on a square layout (Solar, Battery, Grid, Home). Each node binds a signed power datapoint; glowing balls glide from source to sink, growing bigger and faster with more power. Battery shows a state-of-charge ring. Multi-point widget. Inspired by the Home Assistant power-flow card.",
-  "tags": ["power", "energy", "solar", "battery", "grid", "flow", "diagram"],
+  "description": "Animated energy power-flow diagram: a central inverter with Solar / Battery / Grid / Home nodes. Each node binds a main + secondary datapoint; balls flow along the lines by its power (direction, speed, count). Battery shows a state-of-charge arc. Inspired by the Home Assistant power-flow card.",
+  "tags": ["power", "energy", "solar", "battery", "grid", "flow", "diagram", "inverter"],
   "dependencies": [],
   "provides": ["hexaos_powerflow.powerflow"],
-  "assets": { "js": "widget.js", "css": "widget.css" }
+  "assets": {
+    "js": "widget.js",
+    "css": "widget.css",
+    "files": ["assets/solar.svg", "assets/battery.svg", "assets/grid.svg", "assets/home.svg", "assets/inverter.svg"]
+  }
 }

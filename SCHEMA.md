@@ -232,10 +232,17 @@ the widget by its type id.
 - `widget.css` — styles. **Namespace every class with the slug** (e.g.
   `.acme-battery-fill`) to avoid clashing with `.dw-*` or other packages. May read
   the dashboard CSS variables (`--dw-bg`, `--dwv-color`, …).
-- `preview.svg` — catalogue thumbnail.
-- `assets/…` — arbitrary runtime files (`.svg .png .webp .woff2 .json` …), nested
+- `preview/…` — screenshots / GIF animations of the widget for the **catalogue**
+  (so a user can see how it looks before installing). Put any number of
+  `.gif .png .jpg .webp .svg` here; the catalogue uses them (sorted by filename —
+  the first is the hero, so prefix with `01-`, `02-` … to order) and the readme can
+  embed them too. **Docs only:** these are NOT in `assets.files[]`, are **never sent
+  to the device**, and don't count against the 256 KiB on-device budget — keep heavy
+  GIFs here, not in `assets/`.
+- `assets/…` — arbitrary **runtime** files (`.svg .png .webp .woff2 .json` …), nested
   paths allowed. **Served, never executed.** Reference them at runtime via
-  `window.HexaDash.asset(slug, relpath)`.
+  `window.HexaDash.asset(slug, relpath)`. (Declared in `assets.files[]` → installed
+  on device, counts toward the budget — unlike `preview/`.)
 
 ## `cat.json` (identity / metadata / asset manifest)
 ```json
@@ -257,8 +264,8 @@ the widget by its type id.
 }
 ```
 - `kind`: always `"dashboard_widget"`.
-- `category`: `display | control | chart | layout` — must equal each widget's
-  `def.cat`. Used for catalogue grouping/search.
+- `category`: `display | control | chart | diagram | layout` — must equal each
+  widget's `def.cat`. Used for catalogue grouping/search.
 - `version`: widget **semver**; bump on every change + add a `changelog.md` entry.
 - `hexaos_compat`: minimum HexaOS version (`HX_VERSION`) — the single compat gate
   (as drivers). `released`/`updated`: `YYYY-MM-DD`. `author` ≤64, `description`

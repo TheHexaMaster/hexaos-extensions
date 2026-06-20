@@ -1,8 +1,8 @@
 /* hexaos_powerflow — widget styles (.hxpf-* namespaced).
- * The whole diagram is one square 0..100 SVG viewBox (xMidYMid meet) so it scales
- * with the cell. Flow balls are SVG circles positioned by a rAF loop in widget.js;
- * here we only style the static chrome (nodes, base lines, SOC ring) + the ball
- * look (glow comes from the SVG blur filter on the .hxpf-balls group). */
+ * One landscape SVG viewBox (873 x 600, xMidYMid meet) that scales with the cell;
+ * the icons are the packaged SVG illustrations (assets/*.svg) placed via <image>.
+ * Flow balls are SVG circles positioned by a rAF loop in widget.js — here we only
+ * style the static chrome (node rings, connector lines, SOC ring, value texts). */
 
 .hxpf-stage {
   flex: 1;
@@ -18,60 +18,72 @@
   overflow: visible;
 }
 
-/* connecting lines — faint, the balls are the star */
-.hxpf-base {
+/* connector lines (node -> inverter); stroke / width / dash / opacity set inline */
+.hxpf-line {
   fill: none;
-  stroke: #303641;
-  stroke-width: 1.1;
-  stroke-linecap: round;
-}
-
-/* flow balls — solid discs; the .hxpf-balls group blur filter adds the glow */
-.hxpf-ball {
-  stroke: none;
-  transition: none;
-}
-
-/* node disc */
-.hxpf-bg {
-  stroke-width: 1.7;
-}
-.hxpf-ico {
-  fill: none;
-  stroke-width: 1.5;
+  stroke: #444;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* value (inside the disc) + label (outside, toward the nearer edge) */
-.hxpf-val {
-  font-size: 6.2px;
+/* node ring (colour set inline) */
+.hxpf-ring {
+  fill: none;
+  stroke-width: 9;
+}
+
+/* flow balls (colour / size set inline) */
+.hxpf-ball { stroke: none; }
+
+/* values + title (colours set inline) */
+.hxpf-main {
+  font-size: 31px;
   font-weight: 700;
   text-anchor: middle;
   dominant-baseline: middle;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -.2px;
 }
-.hxpf-lbl {
-  font-size: 4px;
+.hxpf-sec {
+  font-size: 18px;
   font-weight: 600;
   text-anchor: middle;
   dominant-baseline: middle;
-  fill: #aab3bd;
-  letter-spacing: .2px;
+  font-variant-numeric: tabular-nums;
+  opacity: .92;
+}
+.hxpf-title {
+  font-size: 19px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: middle;
 }
 
-/* battery state-of-charge ring (sits clear of the node rim) */
+/* battery state-of-charge ring + % frame */
 .hxpf-soc-track {
   fill: none;
-  stroke: #39414d;
-  stroke-width: 2.2;
+  stroke: #2b3038;
+  stroke-width: 7;
+  stroke-linecap: round;
 }
 .hxpf-soc-arc {
   fill: none;
-  stroke-width: 2.6;
+  stroke-width: 7;
   stroke-linecap: round;
-  transition: stroke-dasharray .5s ease;
+  transition: stroke-dasharray .45s ease, stroke .3s;
+}
+.hxpf-soc-frame {
+  fill: #0d1117;
+  stroke: #2b3038;
+  stroke-width: 2;
+}
+.hxpf-soc-lbl {
+  font-size: 17px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: #e6edf3;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

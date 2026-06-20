@@ -1,5 +1,25 @@
 # Changelog — hexaos_powerflow
 
+## 2.0.0 — 2026-06-20
+- **Hub-and-spoke redesign** (was a square of nodes): a central **inverter** with
+  Solar / Battery / Grid / Home around it, joined by orthogonal lines that carry the
+  flow balls toward / away from the inverter by each node's main-value sign.
+- **Rich illustrations** for every node + the inverter (`assets/*.svg`, referenced
+  via `HexaDash.asset()`), replacing the line-art icons.
+- **Two values per node** — a main (large) value + an optional secondary (small) one.
+  The main value's **input unit is a dropdown (W / kW)**; display auto-switches at
+  1000 W (W → 0 dp, kW → 2 dp). Secondary takes its unit from HxLive, decimals
+  configurable. (Replaces the old per-node unit/decimals/auto-kW options.)
+- **State-of-charge arc** on the battery: fills from the left of the % box,
+  counter-clockwise round the bottom, to the right at 100 %, with a configurable
+  **3-stage colour threshold** (critical / warning / normal — colour + %).
+- **Per-node styling**: line colour / width / type (dashed / solid) / dash / opacity;
+  ball colour / count / size; an optional title above each node (show / text / common
+  colour / offset).
+- Category changed from `chart` to **`diagram`**.
+- **Breaking:** several v1.x options were removed / renamed, so a widget saved on
+  1.x must be reconfigured.
+
 ## 1.1.0 — 2026-06-19
 - Full visual redesign. Square layout: Solar top-left, Battery top-right, Grid
   bottom-left, Home bottom-right (was a diamond).
