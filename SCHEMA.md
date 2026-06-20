@@ -232,12 +232,11 @@ the widget by its type id.
 - `widget.css` — styles. **Namespace every class with the slug** (e.g.
   `.acme-battery-fill`) to avoid clashing with `.dw-*` or other packages. May read
   the dashboard CSS variables (`--dw-bg`, `--dwv-color`, …).
-- `preview/…` — screenshots / GIF animations of the widget for the **catalogue**
-  (so a user can see how it looks before installing). Put any number of
-  `.gif .png .jpg .webp .svg` here; the catalogue uses them (sorted by filename —
-  the first is the hero, so prefix with `01-`, `02-` … to order) and the readme can
-  embed them too. **Docs only:** these are NOT in `assets.files[]`, are **never sent
-  to the device**, and don't count against the 256 KiB on-device budget — keep heavy
+- `preview/…` — screenshots / GIF animations of the widget. **Embed them in
+  `readme.md`** (e.g. `![demo](preview/demo.gif)`) — that is the only place they are
+  shown (the catalogue renders the readme, as does GitHub; nothing auto-displays
+  them). Any `.gif .png .jpg .webp .svg`. **Docs only:** NOT in `assets.files[]`,
+  **never sent to the device**, and off the 256 KiB on-device budget — keep heavy
   GIFs here, not in `assets/`.
 - `assets/…` — arbitrary **runtime** files (`.svg .png .webp .woff2 .json` …), nested
   paths allowed. **Served, never executed.** Reference them at runtime via
