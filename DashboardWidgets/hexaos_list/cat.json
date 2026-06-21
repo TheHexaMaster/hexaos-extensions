@@ -8,8 +8,8 @@
   "released": "2026-06-21",
   "updated": "2026-06-21",
   "author": "Martin Macak",
-  "description": "Dynamic data table for the array data source — the first of its kind in HexaOS. Bind any number of datapoints into one input and the widget renders one row per datapoint: icon, name and live value. Each row's icon, colour and label is set per-row in Bindings (reorderable); density, dividers, zebra, icon/name/value sizes and colours, value weight, decimals, unit and an optional header row are global options. No auto or random icons or colours — every visual aspect is user-configured.",
-  "tags": ["list", "table", "array", "datapoints", "rows", "icon", "value", "live"],
+  "description": "Dynamic data table for the array data source — the first of its kind in HexaOS. Bind any number of datapoints into one input; each becomes a reorderable row. Per row you set the icon, colour, label and unit override, and choose what the value column shows: a read-out, a live Control for a writable point, or a rolling Sparkline. Control mode is auto-detected from the datapoint (bool → switch, enum → dropdown, numeric → slider or number, text → input) or chosen explicitly — including an icon-toggle that flips between two status colours — and writes changes back to the device. Global options cover density, dividers, zebra, icon/name/value sizes and colours, value weight, decimals, units, sparkline points/min/max/colour and an optional header. No auto or random icons or colours — every visual aspect is user-configured.",
+  "tags": ["list", "table", "array", "datapoints", "rows", "icon", "value", "live", "control", "writable", "switch", "slider", "sparkline"],
   "dependencies": [],
   "provides": ["hexaos_list.list"],
   "assets": {
