@@ -1,0 +1,121 @@
+/* hexaos_arrays — dynamic data table styles. Namespaced .hxl-* so nothing
+ * collides with .dw-* or other widgets. Sizes are ABSOLUTE px set by the user
+ * (--hxl-ico / --hxl-nm / --hxl-val) — a table stays readable and shows MORE
+ * rows as it grows taller (scroll), rather than scaling the text up. Colours
+ * and weight come from vars the widget sets each render. */
+
+.hxl { display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+.hxl-wrap { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+
+/* optional header row */
+.hxl-hdr {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 11px; border-bottom: 1px solid rgba(255, 255, 255, .1);
+  color: #6e7681; text-transform: uppercase; letter-spacing: .05em;
+  font-size: calc(var(--hxl-nm, 13) * .8px);
+  font-family: var(--dash-font, inherit);
+}
+
+/* scrollable row list */
+.hxl-rows { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.hxl-row { display: flex; align-items: center; gap: 11px; padding: 8px 11px; }
+.hxl-compact .hxl-row { padding: 4px 11px; }
+.hxl-div .hxl-row { border-bottom: 1px solid rgba(255, 255, 255, .06); }
+.hxl-div .hxl-row:last-child { border-bottom: 0; }
+.hxl-zebra .hxl-row:nth-child(even) { background: rgba(255, 255, 255, .025); }
+.hxl-row.hxl-stale { opacity: .5; }
+
+/* icon column */
+.hxl-ico {
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  width: calc(var(--hxl-ico, 18) * 1px); height: calc(var(--hxl-ico, 18) * 1px);
+}
+.hxl-ico svg { width: 100%; height: 100%; }
+
+/* name column */
+.hxl-nm {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--hxl-nm-color, #c9d1d9);
+  font-size: calc(var(--hxl-nm, 13) * 1px);
+  font-family: var(--dash-font, inherit);
+}
+
+/* value column */
+.hxl-val {
+  flex: 0 0 auto; display: inline-flex; align-items: baseline;
+  font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+  font-weight: var(--hxl-val-wt, 600);
+  font-size: calc(var(--hxl-val, 14) * 1px);
+  font-family: var(--dash-font, inherit);
+}
+.hxl-u { opacity: .62; font-weight: 400; margin-left: .2em; font-size: .74em; }
+
+/* ===== value-column variants: interactive controls (writable points) ===== */
+.hxl-ctl { flex: 0 0 auto; display: inline-flex; align-items: center; max-width: 60%; }
+.hxl-ctl > * { font-family: var(--dash-font, inherit); font-size: calc(var(--hxl-val, 14) * 1px); }
+
+/* switch */
+.hxl-sw {
+  position: relative; width: calc(var(--hxl-val, 14) * 2.2px); height: calc(var(--hxl-val, 14) * 1.25px);
+  border-radius: 999px; border: 0; cursor: pointer; padding: 0;
+  background: #30363d; transition: background .18s ease;
+}
+.hxl-sw-k {
+  position: absolute; top: 50%; left: calc(var(--hxl-val, 14) * .16px); transform: translateY(-50%);
+  width: calc(var(--hxl-val, 14) * .95px); height: calc(var(--hxl-val, 14) * .95px); border-radius: 50%;
+  background: #c9d1d9; transition: left .18s ease, background .18s ease;
+}
+.hxl-ctl.on .hxl-sw { background: #2ea043; }
+.hxl-ctl.on .hxl-sw-k { left: calc(100% - var(--hxl-val, 14) * 1.11px); background: #fff; }
+
+/* icon toggle: a clickable icon that switches between two status colours */
+.hxl-ico-tog {
+  border: 0; background: transparent; cursor: pointer; padding: 0; color: #6e7681;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: calc(var(--hxl-val, 14) * 1.7px); height: calc(var(--hxl-val, 14) * 1.7px);
+  transition: color .15s ease, transform .08s ease;
+}
+.hxl-ico-tog svg { width: 100%; height: 100%; }
+.hxl-ico-tog:active { transform: scale(.88); }
+
+/* button */
+.hxl-btn {
+  border: 1px solid #30363d; background: #21262d; color: #e6edf3; cursor: pointer;
+  border-radius: .35em; padding: .22em .7em; line-height: 1.1; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.hxl-btn:hover { background: #30363d; border-color: #58a6ff; }
+.hxl-ctl.on .hxl-btn { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+
+/* dropdown / number / text inputs */
+.hxl-sel, .hxl-numi, .hxl-txt {
+  background: #0d1117; color: #e6edf3; border: 1px solid #30363d; border-radius: .3em;
+  padding: .2em .4em; max-width: 100%; min-width: 0; outline: none;
+}
+.hxl-sel:focus, .hxl-numi:focus, .hxl-txt:focus { border-color: #58a6ff; }
+.hxl-numi { width: calc(var(--hxl-val, 14) * 4.2px); text-align: right; font-variant-numeric: tabular-nums; }
+.hxl-txt { width: 100%; }
+
+/* range slider */
+.hxl-rng { width: clamp(60px, 14vw, 160px); accent-color: #58a6ff; cursor: pointer; }
+
+/* ===== value-column variant: rolling sparkline ===== */
+.hxl-spark { flex: 0 0 auto; display: inline-flex; align-items: center; gap: .5em; max-width: 62%; }
+.hxl-spark-svg {
+  width: clamp(48px, 13vw, 140px); height: calc(var(--hxl-val, 14) * 2px);
+  flex: 0 0 auto; overflow: visible;
+}
+.hxl-spark-line { fill: none; stroke: #58a6ff; stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.hxl-spark-fill { stroke: none; opacity: .14; }
+.hxl-spark-v {
+  font-variant-numeric: tabular-nums; color: var(--hxl-nm-color, #c9d1d9);
+  font-size: calc(var(--hxl-val, 14) * .92px); white-space: nowrap;
+}
+
+/* empty state */
+.hxl-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; text-align: center; color: #6e7681; line-height: 1.6; padding: 1em;
+  font-size: 12px;
+}
+.hxl-empty b { color: #8b949e; font-weight: 600; }

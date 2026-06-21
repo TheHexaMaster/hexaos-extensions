@@ -1,0 +1,19 @@
+{
+  "slug": "hexaos_arrays",
+  "kind": "dashboard_widget",
+  "category": "display",
+  "name": "List",
+  "version": "1.0.0",
+  "hexaos_compat": "0.7.0",
+  "released": "2026-06-21",
+  "updated": "2026-06-21",
+  "author": "Martin Macak",
+  "description": "Dynamic data table for the array data source — the first of its kind in HexaOS. Bind any number of datapoints into one input and the widget renders one row per datapoint: icon, name and live value. Each row's icon, colour and label is set per-row in Bindings (reorderable); density, dividers, zebra, icon/name/value sizes and colours, value weight, decimals, unit and an optional header row are global options. No auto or random icons or colours — every visual aspect is user-configured.",
+  "tags": ["list", "table", "array", "datapoints", "rows", "icon", "value", "live"],
+  "dependencies": [],
+  "provides": ["hexaos_arrays.list"],
+  "assets": {
+    "js": "widget.js",
+    "css": "widget.css"
+  }
+}

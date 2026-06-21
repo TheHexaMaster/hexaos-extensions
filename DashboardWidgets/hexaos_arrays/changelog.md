@@ -1,0 +1,24 @@
+# Changelog — hexaos_arrays (List)
+
+## 1.0.0 — 2026-06-21
+First release. The first HexaOS dashboard widget built on the **array** data source.
+
+- Bind N datapoints into one array input; each becomes a row. Add / remove / reorder freely.
+- **Per-row** (in Bindings): icon, colour, label override and **unit override**; plus a value
+  **Mode** — Value, Control or Sparkline.
+- **Control mode** — turns a writable datapoint into a live control. The element is
+  auto-detected from the point (bool → switch, enum → dropdown, numeric → slider or number,
+  text → input) or chosen explicitly (Icon toggle / Switch / Button / Number / Slider / Dropdown / Text).
+  The **Icon toggle** shows a clickable icon that switches between two user-defined status
+  colours (on / off).
+  Changes are written back to the device; controls reflect the live value.
+- **Sparkline mode** — a rolling mini-graph of the datapoint with a live value read-out.
+  Points held, min and max (auto) and colour/fill are options.
+- **Value mode** — formatted value + unit; numeric by the decimals option (blank = automatic),
+  non-numeric states (e.g. `Closed`, `Auto`) shown as-is.
+- **Global options**: density (comfortable / compact), row dividers, zebra rows; icon size +
+  default colour; name size + colour; value size + weight + colour; decimals, show unit, tint
+  value with row colour; sparkline points / min / max / colour / fill; optional header row.
+- Absolute px sizing (the table stays readable and shows more rows when taller). Sizes are set
+  on the row container so they survive the framework's style pass. Stale / offline rows dim.
+- No auto or random icons / colours — every visual aspect is set explicitly by the user.
