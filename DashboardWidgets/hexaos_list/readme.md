@@ -1,6 +1,9 @@
 # HexaOS List — dynamic data table
 
-![HexaOS List — live data table with values, sparklines and controls](media/demo.gif)
+<p align="center">
+  <img src="media/demo.gif" width="49%" alt="HexaOS List — live values, sparklines and controls">
+  <img src="media/demo2.gif" width="49%" alt="HexaOS List — sections, thresholds, stepper and a summary row">
+</p>
 
 The first HexaOS dashboard widget for the **array** data source. Bind any number of
 datapoints into the single array input and the widget draws one row per datapoint:
