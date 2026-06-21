@@ -1,4 +1,4 @@
-/* hexaos_arrays — dynamic data table styles. Namespaced .hxl-* so nothing
+/* hexaos_list — dynamic data table styles. Namespaced .hxl-* so nothing
  * collides with .dw-* or other widgets. Sizes are ABSOLUTE px set by the user
  * (--hxl-ico / --hxl-nm / --hxl-val) — a table stays readable and shows MORE
  * rows as it grows taller (scroll), rather than scaling the text up. Colours

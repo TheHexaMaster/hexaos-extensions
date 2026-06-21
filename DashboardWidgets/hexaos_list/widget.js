@@ -1,4 +1,4 @@
-/* hexaos_arrays — HexaOS Dashboard Widget: dynamic data table (List).
+/* hexaos_list — HexaOS Dashboard Widget: dynamic data table (List).
  *
  * The first HexaOS widget for the ARRAY data source. Binds ONE input of
  * kind:'array' holding N datapoints; renders one row per datapoint as
@@ -111,7 +111,7 @@
   var WEIGHTS = [{ v: "", l: "Auto" }, { v: "300", l: "300" }, { v: "400", l: "400" },
     { v: "500", l: "500" }, { v: "600", l: "600" }, { v: "700", l: "700" }, { v: "800", l: "800" }];
 
-  window.HexaDash.register("hexaos_arrays.list", {
+  window.HexaDash.register("hexaos_list.list", {
     name: "List",
     cat: "display",
     icon: "<line x1='9' y1='5' x2='20' y2='5'/><line x1='9' y1='12' x2='20' y2='12'/><line x1='9' y1='19' x2='20' y2='19'/><circle cx='4.5' cy='5' r='1.4' fill='currentColor' stroke='none'/><circle cx='4.5' cy='12' r='1.4' fill='currentColor' stroke='none'/><circle cx='4.5' cy='19' r='1.4' fill='currentColor' stroke='none'/>",

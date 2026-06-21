@@ -1,4 +1,4 @@
-# Changelog — hexaos_arrays (List)
+# Changelog — hexaos_list (List)
 
 ## 1.0.0 — 2026-06-21
 First release. The first HexaOS dashboard widget built on the **array** data source.
