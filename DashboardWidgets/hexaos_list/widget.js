@@ -1,26 +1,27 @@
-/* hexaos_list — HexaOS Dashboard Widget: dynamic data table (List).
+/* hexaos_list — HexaOS Dashboard Widget: dynamic data table (HexaOS List).
  *
  * The first HexaOS widget for the ARRAY data source. Binds ONE input of
  * kind:'array' holding N datapoints; renders one row per datapoint as
- *   [icon] [name] .......... [value | control | sparkline]
+ *   [icon] [name] .......... [value | control | sparkline]  [age]
  *
- * Per ROW (Bindings): icon, colour, label override, UNIT override, and a value
- * MODE — Value, Control (live interactive control for a writable point) or
- * Sparkline (rolling mini-graph). The control element is auto-detected from the
- * datapoint (bool->switch, enum->dropdown, numeric->slider/number, else text)
- * or chosen explicitly. GLOBAL (options): sizes, colours, density, dividers,
- * decimals, sparkline points/min/max. No auto/random icons or colours.
+ * Per ROW (Bindings): icon, colour, label override, UNIT override, value MODE
+ * (Value / Control / Sparkline / Section header), control element + icon-toggle
+ * colours + button write value, warn/critical thresholds, per-row sparkline
+ * min/max. GLOBAL options: sizes, colours, density, dividers, value alignment +
+ * min width, threshold colours, last-updated column, sparkline line/bars, a
+ * summary row, offline handling, header. No auto/random icons or colours.
  */
 (function () {
   if (!window.HexaDash || !window.HexaDash.register) return;
   var SVGNS = "http://www.w3.org/2000/svg";
 
   function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
+  function isSet(v) { return v != null && v !== ""; }
   function fmtVal(val, dec) {
     if (val == null || val === "") return "--";
     var n = parseFloat(val);
     if (!isFinite(n)) return String(val);
-    if (dec != null && dec !== "") return n.toFixed(Math.max(0, Math.min(6, Number(dec))));
+    if (isSet(dec)) return n.toFixed(Math.max(0, Math.min(6, Number(dec))));
     return String(Math.round(n * 100) / 100);
   }
   function boolOn(p) {
@@ -29,7 +30,23 @@
     if (v === false || v === "false" || v === 0 || v === "0") return false;
     return parseFloat(v) > 0;
   }
-  /* detect the control element for a writable point (override wins over 'auto') */
+  /* explicit warn/crit thresholds -> colour (or null = normal). Never random. */
+  function threshColor(val, it, o) {
+    if (!isSet(it.warnAt) && !isSet(it.critAt)) return null;
+    var n = parseFloat(val); if (!isFinite(n)) return null;
+    if (isSet(it.critAt) && n >= Number(it.critAt)) return o.critColor || "#f85149";
+    if (isSet(it.warnAt) && n >= Number(it.warnAt)) return o.warnColor || "#d29922";
+    return null;
+  }
+  function ageText(p) {
+    if (!p) return "";
+    if (p.ageStr) return p.ageStr;
+    var a = p.age; if (a == null || !isFinite(a)) return "";
+    if (a < 60) return Math.round(a) + "s";
+    if (a < 3600) return Math.round(a / 60) + "m";
+    if (a < 86400) return Math.round(a / 3600) + "h";
+    return Math.round(a / 86400) + "d";
+  }
   function ctlType(p, override) {
     if (override && override !== "auto") return override;
     if (!p) return "text";
@@ -42,70 +59,97 @@
     if (isFinite(parseFloat(p.value))) return (p.min != null && p.max != null) ? "slider" : "number";
     return "text";
   }
-  function buildControl(type, it, p, ctx) {
-    var slug = it.p, el;
+  function unitSpan(u) { var s = document.createElement("span"); s.className = "hxl-cu"; s.textContent = u || ""; return s; }
+
+  function buildControl(type, it, p, ctx, o) {
+    var slug = it.p, el, wrap, unit = it.unit || (p && p.unit) || "";
+    var tog = function (e) { if (e) e.stopPropagation(); ctx.writePoint(slug, isSet(it.writeVal) ? it.writeVal : (boolOn(p) ? 0 : 1)); };
     if (type === "switch") {
       el = document.createElement("button"); el.type = "button"; el.className = "hxl-sw"; el.setAttribute("role", "switch");
-      el.innerHTML = "<span class='hxl-sw-k'></span>";
-      el.onclick = function () { ctx.writePoint(slug, boolOn(p) ? 0 : 1); };
-    } else if (type === "icon") {
+      el.innerHTML = "<span class='hxl-sw-k'></span>"; el.onclick = tog; return el;
+    }
+    if (type === "icon") {
       el = document.createElement("button"); el.type = "button"; el.className = "hxl-ico-tog";
       el.innerHTML = ctx.iconSvg(it.ctlIcon || it.icon || "power", "currentColor");
-      el.setAttribute("data-on", it.onColor || "#3fb950");
-      el.setAttribute("data-off", it.offColor || "#6e7681");
-      el.onclick = function () { ctx.writePoint(slug, boolOn(p) ? 0 : 1); };
-    } else if (type === "button") {
+      el.setAttribute("data-on", it.onColor || "#3fb950"); el.setAttribute("data-off", it.offColor || "#6e7681");
+      el.onclick = tog; return el;
+    }
+    if (type === "button") {
       el = document.createElement("button"); el.type = "button"; el.className = "hxl-btn"; el.textContent = it.label || "Set";
-      el.onclick = function () { ctx.writePoint(slug, boolOn(p) ? 0 : 1); };
-    } else if (type === "select") {
+      el.onclick = tog; return el;
+    }
+    if (type === "select") {
       el = document.createElement("select"); el.className = "hxl-sel"; var map = (p && p.el) || {};
       Object.keys(map).forEach(function (k) { var op = document.createElement("option"); op.value = k; op.textContent = map[k]; el.appendChild(op); });
-      el.onchange = function () { ctx.writePoint(slug, el.value); };
-    } else if (type === "slider") {
+      el.onclick = function (e) { if (e) e.stopPropagation(); };
+      el.onchange = function () { ctx.writePoint(slug, el.value); }; return el;
+    }
+    if (type === "slider") {
+      wrap = document.createElement("span"); wrap.className = "hxl-rngw";
       el = document.createElement("input"); el.type = "range"; el.className = "hxl-rng";
       el.min = (p && p.min != null) ? p.min : 0; el.max = (p && p.max != null) ? p.max : 100; el.step = (p && p.step) || "any";
+      el.onclick = function (e) { if (e) e.stopPropagation(); };
       el.onchange = function () { ctx.writePoint(slug, el.value); };
-    } else if (type === "number") {
-      el = document.createElement("input"); el.type = "number"; el.className = "hxl-numi";
-      if (p && p.min != null) el.min = p.min; if (p && p.max != null) el.max = p.max; if (p && p.step != null) el.step = p.step;
-      el.onchange = function () { ctx.writePoint(slug, el.value); };
-    } else {
-      el = document.createElement("input"); el.type = "text"; el.className = "hxl-txt";
-      el.onchange = function () { ctx.writePoint(slug, el.value); };
+      wrap.appendChild(el); if (unit) wrap.appendChild(unitSpan(unit)); return wrap;
     }
-    return el;
+    if (type === "stepper") {
+      wrap = document.createElement("span"); wrap.className = "hxl-step";
+      var dec = document.createElement("button"); dec.type = "button"; dec.className = "hxl-step-b"; dec.textContent = "−";
+      var vv = document.createElement("span"); vv.className = "hxl-step-v";
+      var inc = document.createElement("button"); inc.type = "button"; inc.className = "hxl-step-b"; inc.textContent = "+";
+      var st = (p && p.step) ? Number(p.step) : 1;
+      var stepBy = function (e, dir) { if (e) e.stopPropagation(); var cur = parseFloat(p && p.value); if (!isFinite(cur)) cur = 0; var nv = cur + dir * st; if (p && p.min != null) nv = Math.max(Number(p.min), nv); if (p && p.max != null) nv = Math.min(Number(p.max), nv); ctx.writePoint(slug, nv); };
+      dec.onclick = function (e) { stepBy(e, -1); }; inc.onclick = function (e) { stepBy(e, 1); };
+      wrap.appendChild(dec); wrap.appendChild(vv); if (unit) wrap.appendChild(unitSpan(unit)); wrap.appendChild(inc); return wrap;
+    }
+    wrap = document.createElement("span"); wrap.className = "hxl-txtw";
+    el = document.createElement("input"); el.type = "number" === type ? "number" : "text"; el.className = type === "number" ? "hxl-numi" : "hxl-txt";
+    if (type === "number" && p) { if (p.min != null) el.min = p.min; if (p.max != null) el.max = p.max; if (p.step != null) el.step = p.step; }
+    el.onclick = function (e) { if (e) e.stopPropagation(); };
+    el.onchange = function () { ctx.writePoint(slug, el.value); };
+    wrap.appendChild(el); if (unit && type === "number") wrap.appendChild(unitSpan(unit)); return wrap;
   }
   function syncControl(type, ctlSpan, p) {
-    if (!ctlSpan) return; var el = ctlSpan.firstChild; if (!el) return;
+    if (!ctlSpan) return;
     if (type === "switch" || type === "button") {
-      var on = boolOn(p); ctlSpan.classList.toggle("on", on); el.setAttribute("aria-checked", on ? "true" : "false");
+      var on = boolOn(p); ctlSpan.classList.toggle("on", on); ctlSpan.setAttribute("aria-checked", on ? "true" : "false");
     } else if (type === "icon") {
       var oni = boolOn(p); ctlSpan.classList.toggle("on", oni);
-      el.style.color = oni ? (el.getAttribute("data-on") || "#3fb950") : (el.getAttribute("data-off") || "#6e7681");
+      ctlSpan.style.color = oni ? (ctlSpan.getAttribute("data-on") || "#3fb950") : (ctlSpan.getAttribute("data-off") || "#6e7681");
+    } else if (type === "stepper") {
+      var sv = ctlSpan.querySelector(".hxl-step-v"); if (sv) sv.textContent = p ? fmtVal(p.value, "") : "--";
+    } else if (type === "slider") {
+      var rng = ctlSpan.querySelector(".hxl-rng"); if (rng && document.activeElement !== rng && p && p.value != null) rng.value = p.value;
     } else {
-      if (document.activeElement === el) return;
-      if (p && p.value != null) el.value = p.value;
+      var inp = ctlSpan.tagName === "SELECT" ? ctlSpan : ctlSpan.querySelector("input,select"); if (!inp) inp = ctlSpan;
+      if (inp && document.activeElement !== inp && p && p.value != null && "value" in inp) inp.value = p.value;
     }
   }
-  function drawSpark(host, i, m, p, o, it) {
-    var buf = host._spark[i] || (host._spark[i] = []);
+  function drawSpark(host, key, m, p, o, it) {
+    var buf = host._spark[key] || (host._spark[key] = []);
     var v = p ? parseFloat(p.value) : NaN;
     if (isFinite(v)) { buf.push(v); var cap = Math.max(2, Math.min(240, num(o.sparkPoints, 30))); while (buf.length > cap) buf.shift(); }
     if (m.sparkV) m.sparkV.textContent = (isFinite(v) ? fmtVal(v, o.decimals) : "--") +
       ((o.showUnit !== false && (it.unit || (p && p.unit))) ? (" " + (it.unit || p.unit)) : "");
-    if (buf.length < 2) { m.spark.line.setAttribute("d", ""); m.spark.fill.setAttribute("d", ""); return; }
-    var mn = (o.sparkMin != null && o.sparkMin !== "") ? Number(o.sparkMin) : Math.min.apply(null, buf);
-    var mx = (o.sparkMax != null && o.sparkMax !== "") ? Number(o.sparkMax) : Math.max.apply(null, buf);
+    if (buf.length < 2) { m.spark.line.setAttribute("d", ""); m.spark.fill.setAttribute("d", ""); m.spark.bars.innerHTML = ""; return; }
+    var mn = isSet(it.sparkMin) ? Number(it.sparkMin) : (isSet(o.sparkMin) ? Number(o.sparkMin) : Math.min.apply(null, buf));
+    var mx = isSet(it.sparkMax) ? Number(it.sparkMax) : (isSet(o.sparkMax) ? Number(o.sparkMax) : Math.max.apply(null, buf));
     if (!(mx > mn)) mx = mn + 1;
-    var W = 100, H = 30, n = buf.length, step = W / (n - 1);
-    var d = "M" + buf.map(function (val, idx) {
-      var x = idx * step, y = (H - 2) - ((val - mn) / (mx - mn)) * (H - 4);
-      return x.toFixed(1) + " " + y.toFixed(1);
-    }).join(" L");
-    var col = o.sparkColor || it.color || o.valColor || "#58a6ff";
-    m.spark.line.setAttribute("d", d); m.spark.line.style.stroke = col;
-    if (o.sparkFill !== false) { m.spark.fill.setAttribute("d", d + " L" + W + " " + H + " L0 " + H + " Z"); m.spark.fill.style.fill = col; m.spark.fill.style.display = ""; }
-    else m.spark.fill.style.display = "none";
+    var W = 100, H = 30, n = buf.length, col = o.sparkColor || it.color || o.valColor || "#58a6ff";
+    var y = function (val) { return (H - 2) - ((val - mn) / (mx - mn)) * (H - 4); };
+    if (o.sparkStyle === "bars") {
+      m.spark.line.setAttribute("d", ""); m.spark.fill.setAttribute("d", "");
+      var bw = W / n, g = Math.min(1.5, bw * 0.25), html = "";
+      for (var i = 0; i < n; i++) { var by = y(buf[i]), x = i * bw; html += "<rect x='" + (x + g).toFixed(1) + "' y='" + by.toFixed(1) + "' width='" + Math.max(0.4, bw - g * 2).toFixed(1) + "' height='" + (H - by).toFixed(1) + "'/>"; }
+      m.spark.bars.innerHTML = html; m.spark.bars.style.fill = col;
+    } else {
+      m.spark.bars.innerHTML = "";
+      var step = W / (n - 1);
+      var d = "M" + buf.map(function (val, idx) { return (idx * step).toFixed(1) + " " + y(val).toFixed(1); }).join(" L");
+      m.spark.line.setAttribute("d", d); m.spark.line.style.stroke = col;
+      if (o.sparkFill !== false) { m.spark.fill.setAttribute("d", d + " L" + W + " " + H + " L0 " + H + " Z"); m.spark.fill.style.fill = col; m.spark.fill.style.display = ""; }
+      else m.spark.fill.style.display = "none";
+    }
   }
 
   var WEIGHTS = [{ v: "", l: "Auto" }, { v: "300", l: "300" }, { v: "400", l: "400" },
@@ -117,70 +161,82 @@
     icon: "<line x1='9' y1='5' x2='20' y2='5'/><line x1='9' y1='12' x2='20' y2='12'/><line x1='9' y1='19' x2='20' y2='19'/><circle cx='4.5' cy='5' r='1.4' fill='currentColor' stroke='none'/><circle cx='4.5' cy='12' r='1.4' fill='currentColor' stroke='none'/><circle cx='4.5' cy='19' r='1.4' fill='currentColor' stroke='none'/>",
     w: 4, h: 4, minW: 2, minH: 2, cfgOnAdd: true,
 
-    /* one array input; each entry carries label/icon/colour/unit + a value mode + control type */
     sources: [
       { key: "items", label: "Datapoints", kind: "array", pick: "any",
-        entry: { label: 1, icon: 1, color: 1, unit: 1, mode: 1, control: 1, ctlIcon: 1, onColor: 1, offColor: 1 } }
+        entry: { label: 1, icon: 1, color: 1, unit: 1, mode: 1, control: 1, ctlIcon: 1, onColor: 1, offColor: 1, warnAt: 1, critAt: 1, sparkMin: 1, sparkMax: 1, writeVal: 1, header: 1 } }
     ],
 
     opts: [
       { section: "Rows", cat: "appearance" },
-      { key: "density", label: "Density", type: "select", span: 6, default: "comfortable",
-        options: [{ v: "comfortable", l: "Comfortable" }, { v: "compact", l: "Compact" }] },
-      { key: "divider", label: "Row dividers", type: "bool", span: 3, default: true },
-      { key: "zebra",   label: "Zebra rows",   type: "bool", span: 3, default: false },
+      { key: "density", label: "Density", type: "select", span: 4, default: "comfortable", options: [{ v: "comfortable", l: "Comfortable" }, { v: "compact", l: "Compact" }] },
+      { key: "divider", label: "Row dividers", type: "bool", span: 4, default: true },
+      { key: "zebra",   label: "Zebra rows",   type: "bool", span: 4, default: false },
+      { key: "offline", label: "Offline rows", type: "select", span: 6, default: "dim", options: [{ v: "show", l: "Show" }, { v: "dim", l: "Dim" }, { v: "hide", l: "Hide" }] },
+      { key: "rowAction", label: "Click row toggles control", type: "bool", span: 6, default: false, help: "Click anywhere on a switch / icon / button row to toggle it." },
 
       { section: "Icon", cat: "appearance" },
-      { key: "iconSize",  label: "Icon size (px)",      type: "number", span: 6, default: 18 },
-      { key: "iconColor", label: "Default icon colour", type: "color",  span: 6, default: "#8b949e",
-        help: "Used for rows that have no per-row colour set in Bindings." },
+      { key: "iconSize",  label: "Icon size (px)", type: "number", span: 6, default: 18 },
+      { key: "iconColor", label: "Default icon colour", type: "color", span: 6, default: "#8b949e" },
 
       { section: "Name", cat: "appearance" },
-      { key: "nameSize",  label: "Name size (px)", type: "number", span: 6, default: 13 },
-      { key: "nameColor", label: "Name colour",    type: "color",  span: 6, default: "#c9d1d9" },
+      { key: "nameSize",   label: "Name size (px)", type: "number", span: 4, default: 13 },
+      { key: "nameWeight", label: "Name weight", type: "select", span: 4, default: "", options: WEIGHTS },
+      { key: "nameColor",  label: "Name colour", type: "color", span: 4, default: "#c9d1d9" },
 
       { section: "Value", cat: "appearance" },
       { key: "valSize",   label: "Value size (px)", type: "number", span: 4, default: 14 },
-      { key: "valWeight", label: "Value weight",    type: "select", span: 4, default: "600", options: WEIGHTS },
-      { key: "valColor",  label: "Value colour",    type: "color",  span: 4, default: "#f0f3f6" },
+      { key: "valWeight", label: "Value weight", type: "select", span: 4, default: "600", options: WEIGHTS },
+      { key: "valColor",  label: "Value colour", type: "color", span: 4, default: "#f0f3f6" },
+      { key: "valAlign",  label: "Value align", type: "select", span: 6, default: "right", options: [{ v: "right", l: "Right" }, { v: "left", l: "Left" }] },
+      { key: "valMinW",   label: "Value min width (px)", type: "number", span: 6, default: "", ph: "auto" },
+
+      { section: "Thresholds", cat: "appearance" },
+      { key: "threshTgt",  label: "Colour target", type: "select", span: 4, default: "value", options: [{ v: "value", l: "Value" }, { v: "icon", l: "Icon" }, { v: "both", l: "Both" }] },
+      { key: "warnColor",  label: "Warn colour", type: "color", span: 4, default: "#d29922" },
+      { key: "critColor",  label: "Critical colour", type: "color", span: 4, default: "#f85149" },
 
       { section: "Format" },
-      { key: "decimals", label: "Decimals", type: "number", span: 4, default: "", ph: "auto",
-        help: "Decimal places for numeric values; blank = automatic. Non-numeric states show as-is." },
+      { key: "decimals", label: "Decimals", type: "number", span: 4, default: "", ph: "auto", help: "Numeric values; blank = automatic. Non-numeric states show as-is." },
       { key: "showUnit",  label: "Show unit", type: "bool", span: 4, default: true },
-      { key: "tintValue", label: "Tint value with row colour", type: "bool", span: 4, default: false,
-        help: "When on, each value uses its own row colour instead of the value colour." },
+      { key: "tintValue", label: "Tint value with row colour", type: "bool", span: 4, default: false },
+      { key: "showAge",   label: "Show last-updated", type: "bool", span: 6, default: false, help: "Append the age of each value (e.g. 5s, 2m)." },
+      { key: "ageColor",  label: "Last-updated colour", type: "color", span: 6, default: "#6e7681" },
 
       { section: "Sparkline" },
-      { key: "sparkPoints", label: "Points held", type: "number", span: 4, default: 30,
-        help: "How many recent samples each Sparkline row keeps." },
+      { key: "sparkPoints", label: "Points held", type: "number", span: 4, default: 30 },
       { key: "sparkMin", label: "Min", type: "number", span: 4, default: "", ph: "auto" },
       { key: "sparkMax", label: "Max", type: "number", span: 4, default: "", ph: "auto" },
-      { key: "sparkColor", label: "Sparkline colour", type: "color", span: 6, default: "", ph: "row / value colour" },
-      { key: "sparkFill",  label: "Fill under line",  type: "bool",  span: 6, default: true },
+      { key: "sparkColor", label: "Colour", type: "color", span: 4, default: "", ph: "row / value" },
+      { key: "sparkStyle", label: "Style", type: "select", span: 4, default: "line", options: [{ v: "line", l: "Line" }, { v: "bars", l: "Bars" }] },
+      { key: "sparkFill",  label: "Fill under line", type: "bool", span: 4, default: true },
+
+      { section: "Summary" },
+      { key: "summaryOp", label: "Summary row", type: "select", span: 6, default: "", options: [{ v: "", l: "Off" }, { v: "sum", l: "Sum" }, { v: "avg", l: "Average" }, { v: "min", l: "Min" }, { v: "max", l: "Max" }, { v: "count", l: "Count" }] },
+      { key: "summaryLabel", label: "Summary label", type: "text", span: 6, default: "Total", help: "Computed over numeric Value-mode rows." },
 
       { section: "Header" },
       { key: "showHeader", label: "Show header row", type: "bool", span: 4, default: false },
-      { key: "hdrName",    label: "Name heading",    type: "text", span: 4, default: "Name" },
-      { key: "hdrValue",   label: "Value heading",   type: "text", span: 4, default: "Value" }
+      { key: "hdrName",    label: "Name heading", type: "text", span: 4, default: "Name" },
+      { key: "hdrValue",   label: "Value heading", type: "text", span: 4, default: "Value" }
     ],
 
     render: function (host, ctx) {
       var o = ctx.cfg || {}, items = (ctx.items ? ctx.items("items") : []) || [];
-      host.className = "dw hxl" +
-        (o.density === "compact" ? " hxl-compact" : "") +
-        (o.divider !== false ? " hxl-div" : "") +
-        (o.zebra ? " hxl-zebra" : "");
+      if (o.offline === "hide") items = items.filter(function (it) { return it.mode === "header" || !(it.point && it.point.offline); });
+      host.className = "dw hxl" + (o.density === "compact" ? " hxl-compact" : "") + (o.divider !== false ? " hxl-div" : "") + (o.zebra ? " hxl-zebra" : "");
       host.innerHTML = "";
       var wrap = document.createElement("div"); wrap.className = "hxl-wrap";
-      /* size/colour vars live on the wrap child — the framework's dashApplyStyle
-         wipes host.style.cssText right after render. */
       var S = wrap.style;
       S.setProperty("--hxl-ico", String(num(o.iconSize, 18)));
       S.setProperty("--hxl-nm", String(num(o.nameSize, 13)));
       S.setProperty("--hxl-val", String(num(o.valSize, 14)));
       S.setProperty("--hxl-nm-color", o.nameColor || "#c9d1d9");
-      S.setProperty("--hxl-val-wt", String((o.valWeight != null && o.valWeight !== "") ? o.valWeight : 600));
+      S.setProperty("--hxl-nm-wt", String(isSet(o.nameWeight) ? o.nameWeight : 400));
+      S.setProperty("--hxl-val-wt", String(isSet(o.valWeight) ? o.valWeight : 600));
+      S.setProperty("--hxl-val-color", o.valColor || "#f0f3f6");
+      S.setProperty("--hxl-age-color", o.ageColor || "#6e7681");
+      S.setProperty("--hxl-val-minw", isSet(o.valMinW) ? (num(o.valMinW, 0) + "px") : "0px");
+      if (o.valAlign === "left") wrap.classList.add("hxl-vleft");
 
       if (o.showHeader) {
         var hdr = document.createElement("div"); hdr.className = "hxl-hdr";
@@ -192,67 +248,102 @@
       host._rows = []; host._spark = host._spark || {};
 
       if (!items.length) {
-        var em = document.createElement("div"); em.className = "hxl-empty";
-        em.innerHTML = "No datapoints bound.<br>Add rows in <b>Bindings</b>.";
-        rowsEl.appendChild(em);
+        var em = document.createElement("div"); em.className = "hxl-empty"; em.innerHTML = "No datapoints bound.<br>Add rows in <b>Bindings</b>."; rowsEl.appendChild(em);
       } else {
-        items.forEach(function (it, i) {
-          var p = it.point, mode = it.mode || "value", col = it.color || o.iconColor || "#8b949e";
-          var row = document.createElement("div"); row.className = "hxl-row"; row.setAttribute("data-i", i);
+        items.forEach(function (it) {
+          if (it.mode === "header") {
+            var sec = document.createElement("div"); sec.className = "hxl-sec"; sec.textContent = it.label || "";
+            rowsEl.appendChild(sec); host._rows.push({ mode: "header" }); return;
+          }
+          var p = it.point, mode = it.mode || "value", baseCol = it.color || o.iconColor || "#8b949e";
+          var row = document.createElement("div"); row.className = "hxl-row";
           var ico = document.createElement("span"); ico.className = "hxl-ico" + (it.icon ? "" : " hxl-ico-empty");
-          if (it.icon) { ico.style.color = col; ico.innerHTML = ctx.iconSvg(it.icon, col); }
+          if (it.icon) { ico.style.color = baseCol; ico.innerHTML = ctx.iconSvg(it.icon, "currentColor"); }
           row.appendChild(ico);
           var nm = document.createElement("span"); nm.className = "hxl-nm"; nm.textContent = (it.label || (p && p.label) || it.p || "");
           row.appendChild(nm);
 
-          var meta = { mode: mode, ctlType: null, spark: null, sparkV: null };
+          var meta = { mode: mode, slug: it.p, baseCol: baseCol, ico: ico, ctlType: null, spark: null, sparkV: null, ageEl: null };
           if (mode === "control") {
             var type = ctlType(p, it.control); meta.ctlType = type;
             var ctl = document.createElement("span"); ctl.className = "hxl-ctl hxl-ctl-" + type;
-            ctl.appendChild(buildControl(type, it, p, ctx));
-            row.appendChild(ctl);
+            ctl.appendChild(buildControl(type, it, p, ctx, o)); row.appendChild(ctl);
+            if (o.rowAction && (type === "switch" || type === "icon" || type === "button")) {
+              row.classList.add("hxl-clickable");
+              row.onclick = function () { ctx.writePoint(it.p, isSet(it.writeVal) ? it.writeVal : (boolOn(p) ? 0 : 1)); };
+            }
           } else if (mode === "graph") {
             var sp = document.createElement("span"); sp.className = "hxl-spark";
             var svg = document.createElementNS(SVGNS, "svg"); svg.setAttribute("class", "hxl-spark-svg"); svg.setAttribute("viewBox", "0 0 100 30"); svg.setAttribute("preserveAspectRatio", "none");
             var fill = document.createElementNS(SVGNS, "path"); fill.setAttribute("class", "hxl-spark-fill");
+            var bars = document.createElementNS(SVGNS, "g"); bars.setAttribute("class", "hxl-spark-bars");
             var line = document.createElementNS(SVGNS, "path"); line.setAttribute("class", "hxl-spark-line");
-            svg.appendChild(fill); svg.appendChild(line); sp.appendChild(svg);
+            svg.appendChild(fill); svg.appendChild(bars); svg.appendChild(line); sp.appendChild(svg);
             var sv = document.createElement("span"); sv.className = "hxl-spark-v"; sp.appendChild(sv);
-            row.appendChild(sp); meta.spark = { svg: svg, fill: fill, line: line }; meta.sparkV = sv;
-            if (!host._spark[i]) host._spark[i] = [];
+            row.appendChild(sp); meta.spark = { svg: svg, fill: fill, bars: bars, line: line }; meta.sparkV = sv;
+            if (!host._spark[it.p]) host._spark[it.p] = [];
           } else {
             var val = document.createElement("span"); val.className = "hxl-val";
             var v = document.createElement("span"); v.className = "hxl-v"; v.textContent = "--";
             var u = document.createElement("span"); u.className = "hxl-u";
             val.appendChild(v); val.appendChild(u); row.appendChild(val);
+            if (o.showAge) { var ag = document.createElement("span"); ag.className = "hxl-age"; row.appendChild(ag); meta.ageEl = ag; }
           }
-          host._rows.push(meta);
-          rowsEl.appendChild(row);
+          host._rows.push(meta); rowsEl.appendChild(row);
         });
+      }
+
+      host._summary = null;
+      if (isSet(o.summaryOp) && items.length) {
+        var sr = document.createElement("div"); sr.className = "hxl-row hxl-summary";
+        sr.appendChild(document.createElement("span")).className = "hxl-ico hxl-ico-empty";
+        var snm = document.createElement("span"); snm.className = "hxl-nm"; snm.textContent = o.summaryLabel != null ? o.summaryLabel : "Total"; sr.appendChild(snm);
+        var sval = document.createElement("span"); sval.className = "hxl-val"; var sv2 = document.createElement("span"); sv2.className = "hxl-v"; sv2.textContent = "--"; var su = document.createElement("span"); su.className = "hxl-u"; sval.appendChild(sv2); sval.appendChild(su); sr.appendChild(sval);
+        rowsEl.appendChild(sr); host._summary = { vEl: sv2, uEl: su, op: o.summaryOp };
       }
       wrap.appendChild(rowsEl); host.appendChild(wrap);
     },
 
     update: function (host, ctx) {
       var o = ctx.cfg || {}, items = (ctx.items ? ctx.items("items") : []) || [];
-      var rows = host.querySelectorAll(".hxl-row"), meta = host._rows || [];
-      var n = Math.min(rows.length, items.length, meta.length), i;
+      if (o.offline === "hide") items = items.filter(function (it) { return it.mode === "header" || !(it.point && it.point.offline); });
+      var rows = host.querySelectorAll(".hxl-row:not(.hxl-summary)"), meta = host._rows || [];
+      var dataMeta = meta.filter(function (m) { return m.mode !== "header"; });
+      var dataItems = items.filter(function (it) { return it.mode !== "header"; });
+      var n = Math.min(rows.length, dataItems.length, dataMeta.length), i, sumVals = [];
       for (i = 0; i < n; i++) {
-        var row = rows[i], it = items[i], p = it.point, m = meta[i];
+        var row = rows[i], it = dataItems[i], p = it.point, m = dataMeta[i];
+        var tc = threshColor(p ? p.value : null, it, o);
         if (m.mode === "control") {
           syncControl(m.ctlType, row.querySelector(".hxl-ctl"), p);
         } else if (m.mode === "graph") {
-          drawSpark(host, i, m, p, o, it);
+          drawSpark(host, m.slug, m, p, o, it);
+          if (m.sparkV) m.sparkV.style.color = (tc && (o.threshTgt === "value" || o.threshTgt === "both")) ? tc : ((o.tintValue && it.color) ? it.color : (o.valColor || "#f0f3f6"));
         } else {
           var vEl = row.querySelector(".hxl-v"), uEl = row.querySelector(".hxl-u"), wrap = row.querySelector(".hxl-val");
           if (vEl) vEl.textContent = p ? fmtVal(p.value, o.decimals) : "--";
           if (uEl) uEl.textContent = (p && o.showUnit !== false) ? (it.unit || p.unit || "") : "";
-          if (wrap) wrap.style.color = (o.tintValue && it.color) ? it.color : (o.valColor || "#f0f3f6");
+          var vc = tc && (o.threshTgt === "value" || o.threshTgt === "both") ? tc : ((o.tintValue && it.color) ? it.color : (o.valColor || "#f0f3f6"));
+          if (wrap) wrap.style.color = vc;
+          if (m.ageEl) m.ageEl.textContent = ageText(p);
+          var nval = p ? parseFloat(p.value) : NaN; if (isFinite(nval)) sumVals.push(nval);
         }
+        if (m.ico && it.icon) m.ico.style.color = (tc && (o.threshTgt === "icon" || o.threshTgt === "both")) ? tc : m.baseCol;
         row.classList.toggle("hxl-stale", !!(p && (p.offline || p.stale)));
+      }
+      if (host._summary) {
+        var s = host._summary, r, op = s.op;
+        if (!sumVals.length) r = NaN;
+        else if (op === "sum") r = sumVals.reduce(function (a, b) { return a + b; }, 0);
+        else if (op === "avg") r = sumVals.reduce(function (a, b) { return a + b; }, 0) / sumVals.length;
+        else if (op === "min") r = Math.min.apply(null, sumVals);
+        else if (op === "max") r = Math.max.apply(null, sumVals);
+        else if (op === "count") r = sumVals.length;
+        s.vEl.textContent = isFinite(r) ? (op === "count" ? String(r) : fmtVal(r, o.decimals)) : "--";
+        s.uEl.textContent = (op !== "count" && o.showUnit !== false && dataItems[0]) ? (dataItems[0].unit || (dataItems[0].point && dataItems[0].point.unit) || "") : "";
       }
     },
 
-    destroy: function (host) { host._spark = null; host._rows = null; }
+    destroy: function (host) { host._spark = null; host._rows = null; host._summary = null; }
   });
 })();

@@ -1,5 +1,21 @@
 # Changelog — hexaos_list (List)
 
+## 1.1.0 — 2026-06-21
+Adds the proposed list enhancements.
+
+- **Per-row thresholds** — warn / critical levels recolour the value and/or icon (explicit
+  levels + global warn / critical colours + colour target).
+- **Last-updated** age column; **value alignment** (left / right) + min column width;
+  **name weight**.
+- **Number stepper** control; units shown on slider / stepper / number controls; **button
+  write value**; **click-row-to-toggle** for switch / icon / button rows.
+- **Per-row sparkline min / max**; sparkline **bars** style.
+- **Summary row** — sum / average / min / max / count of the numeric Value rows.
+- **Section headers** — non-datapoint rows that group the list.
+- Offline rows: show / dim / hide.
+- Fix: the sparkline read-out now uses the Value size / weight / colour (was the name
+  colour at a reduced size).
+
 ## 1.0.0 — 2026-06-21
 First release. The first HexaOS dashboard widget built on the **array** data source.
 
