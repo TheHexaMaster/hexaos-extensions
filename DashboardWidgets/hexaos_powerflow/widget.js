@@ -54,49 +54,92 @@
     return "M" + p0x.toFixed(2) + "," + p0y.toFixed(2) + "A" + r + " " + r + " 0 1 0 " + p1x.toFixed(2) + "," + p1y.toFixed(2);
   }
 
-  /* ---- options (built per node) ---- */
+  /* ---- Bindings (sources): each node binds a MAIN + an optional SECONDARY
+     datapoint; the battery also binds a SOC datapoint. Registered via Bindings —
+     never hardcoded. The widget reads them with ctx.point(key)/ctx.value(key). */
+  function nodeSources(n) {
+    var p = n.name + " · ", s = [
+      { key: n.k + "_main", label: p + "main", pick: "number" },
+      { key: n.k + "_sec",  label: p + "secondary", pick: "number" }
+    ];
+    if (n.k === "batt") s.push({ key: "batt_soc", label: "Battery · SOC (%)", pick: "number" });
+    return s;
+  }
+  var SOURCES = [];
+  NODES.forEach(function (n) { SOURCES = SOURCES.concat(nodeSources(n)); });
+
+  /* ---- options (per node) — Logic (function) + Appearance (design) sections ---- */
   function nodeOpts(n) {
     var p = n.name + " · ", k = n.k;
-    var o = [
-      { key: k + "_main",     label: p + "main value",      type: "point",  pick: "number", col: 1, default: "" },
-      { key: k + "_mainIn",   label: p + "main input unit", type: "select", col: 3, default: "W", options: [{ v: "W", l: "W (auto kW ≥1000)" }, { v: "kW", l: "kW" }] },
-      { key: k + "_sec",      label: p + "secondary value", type: "point",  pick: "number", col: 1, default: "" },
-      { key: k + "_secDec",   label: p + "sec decimals",    type: "number", col: 3, default: 1 },
-      { key: k + "_color",    label: p + "colour",          type: "color",  default: n.color },
-      { key: k + "_invert",   label: p + "invert flow",     type: "bool",   col: 3, default: false },
-      { key: k + "_titleShow",label: p + "show title",      type: "bool",   col: 3, default: false },
-      { key: k + "_title",    label: p + "title text",      type: "text",   col: 2, default: n.name },
-      { key: k + "_lnColor",  label: p + "line colour",     type: "color",  default: "" },
-      { key: k + "_lnWidth",  label: p + "line width",      type: "number", col: 3, default: 3 },
-      { key: k + "_lnType",   label: p + "line type",       type: "select", col: 3, default: "dash", options: [{ v: "dash", l: "Dashed" }, { v: "solid", l: "Solid" }] },
-      { key: k + "_lnDash",   label: p + "dash on,off",     type: "text",   col: 3, default: "10,9" },
-      { key: k + "_lnOpacity",label: p + "line opacity %",  type: "number", col: 3, default: 70 },
-      { key: k + "_ballColor",label: p + "ball colour",     type: "color",  default: "" },
-      { key: k + "_ballCount",label: p + "ball count",      type: "number", col: 3, default: 3 },
-      { key: k + "_ballSize", label: p + "ball size",       type: "number", col: 3, default: 9 },
-      { key: k + "_speedRef", label: p + "full speed at W", type: "number", col: 3, default: 2000 }
+    var logic = [
+      { section: p + "flow" },
+      /* R1: main input unit (5) | sec decimals (3) | full speed at W (4) */
+      { key: k + "_mainIn",   label: "main input unit", type: "select", span: 5, default: "W", options: [{ v: "W", l: "W (auto kW ≥1000)" }, { v: "kW", l: "kW" }],
+        help: "Unit of the bound value; display auto-switches to kW above 1000 W." },
+      { key: k + "_secDec",   label: "sec decimals",    type: "number", span: 3, default: 1,
+        help: "Decimal places shown for the secondary value." },
+      { key: k + "_speedRef", label: "full speed at W", type: "number", span: 4, default: 2000,
+        help: "Power (W) at which the ball stream reaches full speed and count." },
+      /* R2: invert flow (4) | show node title (3) | node title text (5) */
+      { key: k + "_invert",   label: "invert flow",     type: "bool",   span: 4, default: false,
+        help: "Reverse this node's flow direction (sign)." },
+      { key: k + "_titleShow",label: "show node title", type: "bool",   span: 3, default: false },
+      { key: k + "_title",    label: "node title text", type: "text",   span: 5, default: n.name }
     ];
-    if (k === "batt") o = o.concat([
-      { key: "batt_soc",         label: "Battery · SOC value (%)", type: "point",  pick: "number", col: 1, default: "" },
-      { key: "batt_socShow",     label: "Battery · show SOC arc",  type: "bool",   col: 3, default: true },
-      { key: "batt_socCritPct",  label: "SOC critical ≤ %",   type: "number", col: 3, default: 15 },
-      { key: "batt_socCritColor",label: "SOC critical colour",     type: "color",  col: 3, default: "#f85149" },
-      { key: "batt_socWarnPct",  label: "SOC warning ≤ %",    type: "number", col: 3, default: 35 },
-      { key: "batt_socWarnColor",label: "SOC warning colour",      type: "color",  col: 3, default: "#d29922" },
-      { key: "batt_socNormColor",label: "SOC normal colour",       type: "color",  col: 3, default: "#3fb950" }
-    ]);
-    return o;
+    var appearance = [
+      { section: p + "style", cat: "appearance" },
+      /* R1 colours: node (4) | line (4) | ball (4) */
+      { key: k + "_color",    label: "node colour",   type: "color",  span: 4, default: n.color },
+      { key: k + "_lnColor",  label: "line colour",   type: "color",  span: 4, default: "" },
+      { key: k + "_ballColor",label: "ball colour",   type: "color",  span: 4, default: "" },
+      /* R2 line: width (3) | type (3) | dash (3) | opacity (3) */
+      { key: k + "_lnWidth",  label: "line width",    type: "number", span: 3, default: 3 },
+      { key: k + "_lnType",   label: "line type",     type: "select", span: 3, default: "dash", options: [{ v: "dash", l: "Dashed" }, { v: "solid", l: "Solid" }] },
+      { key: k + "_lnDash",   label: "dash on,off",   type: "text",   span: 3, default: "10,9",
+        help: "Dash pattern: on-pixels,off-pixels (e.g. 10,9)." },
+      { key: k + "_lnOpacity",label: "line opacity %",type: "number", span: 3, default: 70 },
+      /* R3 ball: count (6) | size (6) */
+      { key: k + "_ballCount",label: "ball count",    type: "number", span: 6, default: 3,
+        help: "Max balls in the stream at full power." },
+      { key: k + "_ballSize", label: "ball size",     type: "number", span: 6, default: 9 }
+    ];
+    if (k === "batt") {
+      logic = logic.concat([
+        { section: "Battery · SOC" },
+        /* R1: show arc (4) | critical (4) | warning (4) */
+        { key: "batt_socShow",    label: "show SOC arc",     type: "bool",   span: 4, default: true },
+        { key: "batt_socCritPct", label: "SOC critical ≤ %", type: "number", span: 4, default: 15,
+          help: "Arc shows the critical colour at or below this SOC %." },
+        { key: "batt_socWarnPct", label: "SOC warning ≤ %",  type: "number", span: 4, default: 35,
+          help: "Arc shows the warning colour at or below this SOC %." }
+      ]);
+      appearance = appearance.concat([
+        { section: "Battery · SOC colours", cat: "appearance" },
+        /* R1: critical (4) | warning (4) | normal (4) */
+        { key: "batt_socCritColor", label: "SOC critical colour", type: "color", span: 4, default: "#f85149" },
+        { key: "batt_socWarnColor", label: "SOC warning colour",  type: "color", span: 4, default: "#d29922" },
+        { key: "batt_socNormColor", label: "SOC normal colour",   type: "color", span: 4, default: "#3fb950" }
+      ]);
+    }
+    return logic.concat(appearance);
   }
   var OPTS = [];
   NODES.forEach(function (n) { OPTS = OPTS.concat(nodeOpts(n)); });
   OPTS = OPTS.concat([
-    { key: "hideBelow",   label: "Hide flow below W", type: "number", col: 3, default: 5 },
-    { key: "titleColor",  label: "Title colour",      type: "color",  col: 3, default: "#9aa4af" },
-    { key: "titleOffset", label: "Title offset",      type: "number", col: 3, default: 0 }
+    { section: "Diagram" },
+    { key: "hideBelow", label: "Hide flow below W", type: "number", span: 4, default: 5,
+      help: "Hide a node's ball stream when |power| is under this many watts." },
+    { section: "Diagram style", cat: "appearance" },
+    /* node title colour (7) | offset (5) */
+    { key: "titleColor",  label: "Node title colour", type: "color",  span: 7, default: "#9aa4af" },
+    { key: "titleOffset", label: "Node title offset", type: "number", span: 5, default: 0,
+      help: "Vertical nudge (px) of the node titles." }
   ]);
 
   /* ---- helpers ---- */
-  function num(ctx, slug) { if (!slug || !ctx.resolve) return null; var pt = ctx.resolve(slug); if (!pt) return null; var v = parseFloat(pt.value); return isFinite(v) ? v : null; }
+  /* read a bound source's numeric value (kind:'point' bindings, by key) */
+  function numKey(ctx, key) { var pt = ctx.point ? ctx.point(key) : null; if (!pt) return null; var v = parseFloat(pt.value); return isFinite(v) ? v : null; }
+  function bound(ctx, key) { var s = ctx.src ? ctx.src(key) : null; return !!(s && s.point); }
   /* main: input W or kW -> normalise to watts, then show W (0 dp) / kW (2 dp) at 1000W */
   function toWatts(v, inUnit) { if (v == null || !isFinite(v)) return null; return (inUnit === "kW") ? v * 1000 : v; }
   function fmtMain(watts) {
@@ -117,7 +160,9 @@
     name: "Power Flow",
     cat: "diagram",
     icon: "<rect x='3' y='3' width='12' height='12' rx='2.5'/><circle cx='6' cy='6' r='1.15' fill='currentColor' stroke='none'/><circle cx='12' cy='6' r='1.15' fill='currentColor' stroke='none'/><circle cx='6' cy='12' r='1.15' fill='currentColor' stroke='none'/><circle cx='12' cy='12' r='1.15' fill='currentColor' stroke='none'/>",
-    w: 5, h: 5, minW: 4, minH: 3, needsBind: false, writable: false, cfgOnAdd: true,
+    w: 5, h: 5, minW: 4, minH: 3, cfgOnAdd: true,
+    /* every input is registered via Bindings — never hardcoded into the widget */
+    sources: SOURCES,
     opts: OPTS,
 
     render: function (host, ctx) {
@@ -151,7 +196,7 @@
         s += "</g>";
       });
       s += "</svg>";
-      host.innerHTML = "<div class='dw-name'></div><div class='hxpf-stage'>" + s + "</div>";
+      host.innerHTML = "<div class='hxpf-stage'>" + s + "</div>";
 
       var pf = host._pf = { nodes: {}, raf: 0, last: 0 };
       NODES.forEach(function (n) {
@@ -181,20 +226,20 @@
 
     update: function (host, ctx) {
       var o = ctx.cfg || {}, pf = host._pf;
-      var nm = host.querySelector(".dw-name"); if (nm) { nm.textContent = ctx.title(); nm.style.display = ctx.title() ? "" : "none"; }
+      /* no .dw-name: an overall heading is the optional framework Widget Title (Common) */
       var hide = (o.hideBelow != null && o.hideBelow !== "") ? Number(o.hideBelow) : 5;
       var qg = function (sel) { return host.querySelector(sel); };
 
       NODES.forEach(function (n) {
         var k = n.k, col = o[k + "_color"] || n.color;
-        var mainWatts = toWatts(num(ctx, o[k + "_main"]), o[k + "_mainIn"] || "W");
-        var secPt = (o[k + "_sec"] && ctx.resolve) ? ctx.resolve(o[k + "_sec"]) : null;
+        var mainWatts = toWatts(numKey(ctx, k + "_main"), o[k + "_mainIn"] || "W");
+        var secBound = bound(ctx, k + "_sec"), secPt = secBound ? ctx.point(k + "_sec") : null;
         var secV = secPt ? parseFloat(secPt.value) : null;
 
         var ring = qg(".hxpf-ring[data-k='" + k + "']"); if (ring) ring.style.stroke = col;
         var mt = qg(".hxpf-main[data-k='" + k + "']"); if (mt) { mt.textContent = fmtMain(mainWatts); mt.style.fill = col; }
         var se = qg(".hxpf-sec[data-k='" + k + "']");
-        if (se) { se.style.display = o[k + "_sec"] ? "" : "none"; se.textContent = o[k + "_sec"] ? fmtSec(secV, o[k + "_secDec"], secPt ? (secPt.unit || "") : "") : ""; se.style.fill = col; }
+        if (se) { se.style.display = secBound ? "" : "none"; se.textContent = secBound ? fmtSec(secV, o[k + "_secDec"], secPt ? (secPt.unit || "") : "") : ""; se.style.fill = col; }
 
         var tt = qg(".hxpf-title[data-k='" + k + "']");
         if (tt) {
@@ -228,9 +273,9 @@
       });
 
       /* battery SOC arc: 0% left edge -> counter-clockwise round the bottom -> 100% right edge */
-      var soc = num(ctx, o.batt_soc);
+      var soc = numKey(ctx, "batt_soc");
       var track = qg(".hxpf-soc-track"), arc = qg(".hxpf-soc-arc"), frame = qg(".hxpf-soc-frame"), lbl = qg(".hxpf-soc-lbl");
-      var showSoc = (o.batt_socShow !== false) && (o.batt_soc);
+      var showSoc = (o.batt_socShow !== false) && bound(ctx, "batt_soc");
       [track, arc, frame, lbl].forEach(function (el) { if (el) el.style.display = showSoc ? "" : "none"; });
       if (showSoc && arc) {
         var sv = (soc != null) ? Math.max(0, Math.min(100, soc)) : 0;

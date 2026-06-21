@@ -1,55 +1,149 @@
-/* hexaos_battery — widget styles.
- * Every class is namespaced with the slug-derived prefix .hxbat- so it can never
- * collide with the dashboard's own .dw-* classes or with another widget package.
- * Dashboard CSS variables (--dwv-fs, --dwv-color, ...) may be read freely.
- * Sizes use container-query units (cqh) so the widget scales with its cell. */
+/* hexaos_battery — widget styles (themeable + responsive).
+ * Namespaced .hxbat-* so nothing collides with .dw-* or other widgets.
+ * State from the widget each tick:
+ *   --hxp fill 0..100   --hxc colour   --hx-ar aspect (W/H)
+ *   --hx-frame-w / --hx-frame-c / --hx-radius / --hx-ring-w / --hx-seg-gap
+ *   --hx-glowc / --hx-track   + classes (hxbat-fill/glow/charging/crit/...).
+ * Sizes scale with the cell via em + --dw-scale; the battery box is sized by
+ * container queries against the stage (--hx-fw/--hx-rad are the scaled px). */
 
-.hxbat {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .2em;
-  padding: .2em 0;
+/* ===================== stage + responsive fit box ===================== */
+.hxbat-stage {
+  flex: 1; min-height: 0; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; box-sizing: border-box; padding: .25em;
+  container-type: size;                 /* the fit box scales against THIS */
+  --hxp: 0; --hxc: #3fb950; --hx-ar: 1;
+  --hx-fw: calc(var(--hx-frame-w, 3) * 1px * var(--dw-scale, 1));
+  --hx-rad: calc(var(--hx-radius, 9) * 1px * var(--dw-scale, 1));
 }
-.hxbat-cap {
-  width: 30%;
-  height: .5em;
-  background: #30363d;
-  border-radius: .15em .15em 0 0;
-}
-.hxbat-shell {
+/* Scale to fit: the largest box of aspect --hx-ar that fits the cell, centred */
+.hxbat-fit {
   position: relative;
-  flex: 1;
-  min-height: 0;
-  width: 60%;
-  border: 2px solid #30363d;
-  border-radius: .25em;
-  background: #0d1117;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .5);
+  width:  min(100%, calc(100cqh * var(--hx-ar, 1)));
+  height: min(100%, calc(100cqw / var(--hx-ar, 1)));
 }
+/* Stretch to fill: ignore aspect, use the whole cell */
+.hxbat-fill .hxbat-fit { width: 100%; height: 100%; }
+
+/* ===================== shared bits ===================== */
+.hxbat-body {
+  position: relative; box-sizing: border-box; overflow: hidden;
+  background: var(--hx-track, #0c1014);
+  border: var(--hx-fw) solid var(--hx-frame-c, #2b333f);
+  border-radius: var(--hx-rad);
+  box-shadow: inset 0 .1em .45em rgba(0, 0, 0, .5);
+}
+.hxbat-cap { background: var(--hx-frame-c, #2b333f); flex: 0 0 auto; }
+.hxbat-cap-t { width: 32%; height: 5.5%; min-height: 2px; border-radius: var(--hx-rad) var(--hx-rad) 0 0; }
+.hxbat-cap-r { width: 5%; min-width: 2px; height: 36%; border-radius: 0 var(--hx-rad) var(--hx-rad) 0; margin-left: .14em; }
+
+/* the fill — solid colour, smooth tween, optional glow */
 .hxbat-fill {
-  width: 100%;
-  height: 0;
-  background: #3fb950;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
-  transition: height .4s cubic-bezier(.4, 0, .2, 1), background .25s;
+  background: var(--hxc);
+  transition: height .55s cubic-bezier(.32, .72, 0, 1),
+              width  .55s cubic-bezier(.32, .72, 0, 1),
+              background-color .35s ease, box-shadow .35s ease;
 }
+.hxbat-glow .hxbat-fill { box-shadow: 0 0 .7em -.1em var(--hx-glowc, var(--hxc)); }
+.hxbat-noanim .hxbat-fill, .hxbat-noanim .hxbat-ring-prog { transition: none; }
+.hxbat-empty .hxbat-fill { opacity: .2; }
+
+/* glossy 3D highlight over any base colour */
+.hxbat-gloss {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, .42) 0%, rgba(255, 255, 255, .10) 40%,
+    rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, .16) 100%);
+}
+/* charging shimmer band */
+.hxbat-flow {
+  position: absolute; left: -60%; top: -60%; width: 55%; height: 220%;
+  transform: rotate(18deg); opacity: 0; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .5), transparent);
+}
+.hxbat-charging .hxbat-flow { opacity: 1; animation: hxbat-flow 1.9s linear infinite; }
+.hxbat-crit .hxbat-fill { animation: hxbat-pulse 1.15s ease-in-out infinite; }
+.hxbat-crit .hxbat-ring-prog { animation: hxbat-pulsestroke 1.15s ease-in-out infinite; }
+
+/* percentage read-out + bolt */
+.hxbat-read { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: .14em; pointer-events: none; }
+.hxbat-v-body .hxbat-read, .hxbat-sv-body .hxbat-read { flex-direction: column; }
 .hxbat-pct {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--dwv-color, #f0f3f6);
-  font-size: calc(var(--dwv-fs, 20) * 1cqh);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, .65);
-  pointer-events: none;
+  font-family: var(--dwv-fam, inherit);
+  font-weight: var(--dwv-weight, 700);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1;
+  color: var(--dwv-color, #f2f5f8);
+  font-size: calc(var(--dwv-size, 18) * 1px * var(--dw-scale, 1));
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .55);
+}
+.hxbat-nopct .hxbat-pct { display: none; }
+.hxbat-bolt {
+  width: .82em; height: .82em; flex: 0 0 auto; color: #ffd23f;
+  filter: drop-shadow(0 0 .18em rgba(255, 210, 63, .75));
+  opacity: 0; transform: scale(.5) rotate(-8deg); transition: opacity .25s ease, transform .25s ease;
+}
+.hxbat-charging .hxbat-bolt { opacity: 1; transform: none; animation: hxbat-bolt 1.5s ease-in-out infinite; }
+
+/* ===================== vertical / horizontal ===================== */
+.hxbat-v { display: flex; flex-direction: column; align-items: center; }
+.hxbat-v-body { flex: 1; width: 100%; display: flex; }
+.hxbat-v-fill { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--hxp) * 1%); }
+
+.hxbat-h { display: flex; align-items: center; }
+.hxbat-h-body { flex: 1; height: 100%; display: flex; }
+.hxbat-h-fill { position: absolute; top: 0; bottom: 0; left: 0; width: calc(var(--hxp) * 1%); }
+
+/* ===================== segment vertical / horizontal ===================== */
+.hxbat-sv { display: flex; flex-direction: column; align-items: center; }
+.hxbat-sv-body { flex: 1; width: 100%; }
+.hxbat-sh { display: flex; align-items: center; }
+.hxbat-sh-body { flex: 1; height: 100%; }
+.hxbat-segs {
+  position: absolute; inset: 0; display: flex; box-sizing: border-box;
+  gap: calc(var(--hx-seg-gap, 3) * 1px * var(--dw-scale, 1));
+  padding: calc(var(--hx-seg-gap, 3) * 1px * var(--dw-scale, 1));
+}
+.hxbat-segs-v { flex-direction: column; }
+.hxbat-segs-h { flex-direction: row; }
+.hxbat-seg {
+  flex: 1; min-width: 0; min-height: 0; position: relative; overflow: hidden;
+  border-radius: calc(var(--hx-rad) * .55);
+  background: rgba(255, 255, 255, .045);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+}
+.hxbat-seg > b { position: absolute; display: block; border-radius: inherit; }
+.hxbat-segs-v .hxbat-seg > b { left: 0; right: 0; bottom: 0; height: calc(clamp(0, (var(--hxp) - var(--lo)) / var(--step), 1) * 100%); }
+.hxbat-segs-h .hxbat-seg > b { top: 0; bottom: 0; left: 0; width: calc(clamp(0, (var(--hxp) - var(--lo)) / var(--step), 1) * 100%); }
+
+/* ===================== ring ===================== */
+.hxbat-ring { position: relative; display: flex; align-items: center; justify-content: center; }
+.hxbat-ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.hxbat-ring-track { fill: none; stroke: var(--hx-track, #1a2029); stroke-width: var(--hx-ring-w, 10); }
+.hxbat-ring-prog {
+  fill: none; stroke: var(--hxc); stroke-width: var(--hx-ring-w, 10); stroke-linecap: round;
+  stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--hxp));
+  transition: stroke-dashoffset .55s cubic-bezier(.32, .72, 0, 1), stroke .35s ease;
+}
+.hxbat-glow .hxbat-ring-prog { filter: drop-shadow(0 0 3px var(--hx-glowc, var(--hxc))); }
+.hxbat-ring-c { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.hxbat-t-ring .hxbat-pct { font-size: calc(var(--dwv-size, 18) * 1.5px * var(--dw-scale, 1)); }
+
+/* ===================== minimal ===================== */
+.hxbat-min { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5em; }
+.hxbat-min-top { display: flex; align-items: center; gap: .2em; }
+.hxbat-t-minimal .hxbat-pct { font-size: calc(var(--dwv-size, 18) * 1.7px * var(--dw-scale, 1)); }
+.hxbat-min-track {
+  width: 100%; height: .5em; min-height: 4px; border-radius: 99px; overflow: hidden;
+  background: var(--hx-track, #0c1014); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
+}
+.hxbat-min-fill { height: 100%; width: calc(var(--hxp) * 1%); border-radius: 99px; }
+
+/* ===================== keyframes ===================== */
+@keyframes hxbat-flow { 0% { transform: translateX(0) rotate(18deg); } 100% { transform: translateX(360%) rotate(18deg); } }
+@keyframes hxbat-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+@keyframes hxbat-pulsestroke { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes hxbat-bolt { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@media (prefers-reduced-motion: reduce) {
+  .hxbat-flow, .hxbat-bolt, .hxbat-crit .hxbat-fill, .hxbat-crit .hxbat-ring-prog { animation: none; }
 }

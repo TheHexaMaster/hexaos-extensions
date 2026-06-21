@@ -1,5 +1,17 @@
 # Changelog — hexaos_powerflow
 
+## 3.0.0 — 2026-06-21
+- **New config architecture.** Every datapoint (each node's main + secondary, plus
+  the battery SOC) is now a named source registered via the **Bindings** tab — no
+  more `point`-type options or hardcoded slugs; the widget reads them with
+  `ctx.point(key)`.
+- Per-node + global options split across **Logic** (flow / input unit / decimals /
+  invert / speed / node title / SOC thresholds) and **Appearance** (node + line +
+  ball colours / sizes, SOC colours, diagram style) tabs; `col` widths → `span`.
+- The overall heading is now the optional framework **Widget Title** (Common tab),
+  not a widget-drawn name.
+- **Breaking:** a widget saved on 2.x must be re-bound and re-styled.
+
 ## 2.0.0 — 2026-06-20
 - **Hub-and-spoke redesign** (was a square of nodes): a central **inverter** with
   Solar / Battery / Grid / Home around it, joined by orthogonal lines that carry the
