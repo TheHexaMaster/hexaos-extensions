@@ -1,5 +1,10 @@
 # hexaos-extensions
 
+## notice
+HexaOS Operating System for ESP32 is not released yet.  [Follow us at facebook project
+page](https://www.facebook.com/groups/864520403381863)
+##
+
 Public catalogue of **HexaOS Extensions**. Extension types so far:
 - **Drivers** — versioned JSON device drivers for the HexaOS firmware.
 - **Dashboard Widgets** — community widgets for the HexaOS **WebUI dashboard**
