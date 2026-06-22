@@ -28,16 +28,10 @@ SCHEMA.md                   authoritative spec for BOTH package types
 ```
 
 ## How it flows
-1. Contribute/update a driver or widget via PR or commit (community welcome; most
-   packages are authored by the HexaOS AI). Bump `cat.json.version` and add a
-   `changelog.md` entry on every change (see Versioning in `SCHEMA.md`).
-2. This repo is **pure data — it has no CI of its own.** The **hexaos-portal**
-   repo includes it as a git submodule, generates the catalogue indexes from the
-   `Drivers/` and `DashboardWidgets/` packages at build time (validating the
-   mandatory files, the `cat.json` schema, semver, unique slug and
-   `hexaos_compat`), and serves the Extensions catalogues on hexaos.io. A change
-   goes live by bumping the submodule in the portal and deploying it — there is no
-   separate publish pipeline here.
+
+Contribute/update a driver or widget via PR or commit (community welcome; most
+packages are authored by the HexaOS AI). Bump `cat.json.version` and add a
+`changelog.md` entry on every change (see Versioning in `SCHEMA.md`).
 
 ## Rules
 - `slug` = lowercase snake_case, unique, = directory name (`manufacturer_model`
