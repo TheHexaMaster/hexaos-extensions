@@ -1,5 +1,16 @@
 # Changelog — hexaos_list (List)
 
+## 1.1.1 — 2026-06-21
+Bug fixes for the live controls.
+
+- Switch / icon-toggle / button / stepper now read the datapoint's **current** value at
+  click time instead of a stale render-time snapshot — repeated toggles work again
+  (previously only the first toggle took effect; later clicks re-sent the same value).
+  Toggles also honour the point's on/off values (`ton`/`toff`).
+- Icon-toggle now applies its on/off **status colours** correctly — they were set on the
+  wrong element and read from the wrong place, so the user colours were ignored and the
+  icon never recoloured.
+
 ## 1.1.0 — 2026-06-21
 Adds the proposed list enhancements.
 

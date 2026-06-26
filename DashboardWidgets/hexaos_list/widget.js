@@ -63,7 +63,14 @@
 
   function buildControl(type, it, p, ctx, o) {
     var slug = it.p, el, wrap, unit = it.unit || (p && p.unit) || "";
-    var tog = function (e) { if (e) e.stopPropagation(); ctx.writePoint(slug, isSet(it.writeVal) ? it.writeVal : (boolOn(p) ? 0 : 1)); };
+    var tog = function (e) {
+      if (e) e.stopPropagation();
+      if (isSet(it.writeVal)) { ctx.writePoint(slug, it.writeVal); return; }
+      /* read the CURRENT point at click time — never the render-time snapshot */
+      var cur = (ctx.resolve && ctx.resolve(slug)) || p;
+      var on = ctx.boolOf ? ctx.boolOf(cur) : boolOn(cur);
+      ctx.writePoint(slug, on ? (cur && cur.toff != null ? cur.toff : 0) : (cur && cur.ton != null ? cur.ton : 1));
+    };
     if (type === "switch") {
       el = document.createElement("button"); el.type = "button"; el.className = "hxl-sw"; el.setAttribute("role", "switch");
       el.innerHTML = "<span class='hxl-sw-k'></span>"; el.onclick = tog; return el;
@@ -98,7 +105,7 @@
       var vv = document.createElement("span"); vv.className = "hxl-step-v";
       var inc = document.createElement("button"); inc.type = "button"; inc.className = "hxl-step-b"; inc.textContent = "+";
       var st = (p && p.step) ? Number(p.step) : 1;
-      var stepBy = function (e, dir) { if (e) e.stopPropagation(); var cur = parseFloat(p && p.value); if (!isFinite(cur)) cur = 0; var nv = cur + dir * st; if (p && p.min != null) nv = Math.max(Number(p.min), nv); if (p && p.max != null) nv = Math.min(Number(p.max), nv); ctx.writePoint(slug, nv); };
+      var stepBy = function (e, dir) { if (e) e.stopPropagation(); var rp = (ctx.resolve && ctx.resolve(slug)) || p; var cur = parseFloat(rp && rp.value); if (!isFinite(cur)) cur = 0; var nv = cur + dir * st; if (rp && rp.min != null) nv = Math.max(Number(rp.min), nv); if (rp && rp.max != null) nv = Math.min(Number(rp.max), nv); ctx.writePoint(slug, nv); };
       dec.onclick = function (e) { stepBy(e, -1); }; inc.onclick = function (e) { stepBy(e, 1); };
       wrap.appendChild(dec); wrap.appendChild(vv); if (unit) wrap.appendChild(unitSpan(unit)); wrap.appendChild(inc); return wrap;
     }
@@ -115,7 +122,8 @@
       var on = boolOn(p); ctlSpan.classList.toggle("on", on); ctlSpan.setAttribute("aria-checked", on ? "true" : "false");
     } else if (type === "icon") {
       var oni = boolOn(p); ctlSpan.classList.toggle("on", oni);
-      ctlSpan.style.color = oni ? (ctlSpan.getAttribute("data-on") || "#3fb950") : (ctlSpan.getAttribute("data-off") || "#6e7681");
+      var ib = ctlSpan.firstChild;   /* the .hxl-ico-tog button holds data-on/off + the SVG */
+      if (ib) ib.style.color = oni ? (ib.getAttribute("data-on") || "#3fb950") : (ib.getAttribute("data-off") || "#6e7681");
     } else if (type === "stepper") {
       var sv = ctlSpan.querySelector(".hxl-step-v"); if (sv) sv.textContent = p ? fmtVal(p.value, "") : "--";
     } else if (type === "slider") {
